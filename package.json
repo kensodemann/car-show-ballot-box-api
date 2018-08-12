@@ -1,0 +1,51 @@
+{
+  "name": "car-show-ballot-box-api",
+  "version": "0.0.1",
+  "description": "API for the Waukesha Old Car Club car show ballot box",
+  "main": "index.js",
+  "watch": {
+    "lint": {
+      "patterns": [
+        "src",
+        "test"
+      ],
+      "extensions": "js"
+    },
+    "test": {
+      "patterns": [
+        "src",
+        "test"
+      ],
+      "extensions": "js"
+    }
+  },
+  "scripts": {
+    "lint": "eslint --ext .js src test",
+    "test": "mocha test/**/*.spec.js",
+    "start": "node index.js"
+  },
+  "author": "Ken Sodemann <ken.sodemann@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "~1.18.3",
+    "express": "~4.16.3",
+    "jsonwebtoken": "~8.3.0",
+    "moment": "~2.22.2",
+    "passport": "~0.4.0",
+    "passport-local": "~1.0.0",
+    "pg": "~7.4.3"
+  },
+  "devDependencies": {
+    "chai": "~4.1.2",
+    "eslint": "~5.3.0",
+    "eslint-config-standard": "~11.0.0",
+    "eslint-plugin-import": "~2.13.0",
+    "eslint-plugin-node": "~7.0.1",
+    "eslint-plugin-promise": "~3.8.0",
+    "eslint-plugin-standard": "~3.1.0",
+    "mocha": "~5.2.0",
+    "proxyquire": "~2.0.1",
+    "sinon": "~6.1.5",
+    "supertest": "~3.1.0"
+  }
+}
