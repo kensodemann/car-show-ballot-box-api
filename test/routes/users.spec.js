@@ -7,7 +7,7 @@ const proxyquire = require('proxyquire');
 const request = require('supertest');
 const sinon = require('sinon');
 
-describe('route: /api/users', () => {
+describe('route: /users', () => {
   let app;
   let auth;
   let mockJWT;
@@ -118,7 +118,7 @@ describe('route: /api/users', () => {
     it('requires an API login', done => {
       mockJWT.verify.throws(new Error('no loggy loggy'));
       request(app)
-        .get('/api/users')
+        .get('/users')
         .end((err, res) => {
           expect(res.status).to.equal(401);
           expect(res.body).to.deep.equal({});
@@ -128,7 +128,7 @@ describe('route: /api/users', () => {
 
     it('returns the data', done => {
       request(app)
-        .get('/api/users')
+        .get('/users')
         .end((err, res) => {
           expect(res.status).to.equal(200);
           expect(res.body).to.deep.equal(testData);
@@ -140,7 +140,7 @@ describe('route: /api/users', () => {
       it('requires an API login', done => {
         mockJWT.verify.throws(new Error('no loggy loggy'));
         request(app)
-          .get('/api/users/current')
+          .get('/users/current')
           .end((err, res) => {
             expect(res.status).to.equal(401);
             expect(res.body).to.deep.equal({});
@@ -150,7 +150,7 @@ describe('route: /api/users', () => {
 
       it('returns the current user', done => {
         request(app)
-          .get('/api/users/current')
+          .get('/users/current')
           .end((err, res) => {
             expect(res.status).to.equal(200);
             expect(res.body).to.deep.equal({
@@ -168,7 +168,7 @@ describe('route: /api/users', () => {
       it('requires an API login', done => {
         mockJWT.verify.throws(new Error('no loggy loggy'));
         request(app)
-          .get('/api/users/30')
+          .get('/users/30')
           .end((err, res) => {
             expect(res.status).to.equal(401);
             expect(res.body).to.deep.equal({});
@@ -178,7 +178,7 @@ describe('route: /api/users', () => {
 
       it('returns the data if the current user is admin', done => {
         request(app)
-          .get('/api/users/30')
+          .get('/users/30')
           .end((err, res) => {
             expect(res.status).to.equal(200);
             expect(res.body).to.deep.equal({
@@ -200,7 +200,7 @@ describe('route: /api/users', () => {
           exp: 19930124509912485
         });
         request(app)
-          .get('/api/users/30')
+          .get('/users/30')
           .end((err, res) => {
             expect(res.status).to.equal(200);
             expect(res.body).to.deep.equal({
@@ -222,7 +222,7 @@ describe('route: /api/users', () => {
           exp: 19930124509912485
         });
         request(app)
-          .get('/api/users/30')
+          .get('/users/30')
           .end((err, res) => {
             expect(res.status).to.equal(403);
             expect(res.body).to.deep.equal({});
@@ -232,7 +232,7 @@ describe('route: /api/users', () => {
 
       it('returns 404 if the user is not found', done => {
         request(app)
-          .get('/api/users/314159')
+          .get('/users/314159')
           .end((err, res) => {
             expect(res.status).to.equal(404);
             done();
@@ -251,7 +251,7 @@ describe('route: /api/users', () => {
       it('requires an API login', done => {
         mockJWT.verify.throws(new Error('no loggy loggy'));
         request(app)
-          .post('/api/users/30')
+          .post('/users/30')
           .send({
             id: 30,
             firstName: 'Barney',
@@ -267,7 +267,7 @@ describe('route: /api/users', () => {
 
       it('calls the save if admin', done => {
         request(app)
-          .post('/api/users/30')
+          .post('/users/30')
           .send({
             id: 30,
             firstName: 'Barney',
@@ -296,7 +296,7 @@ describe('route: /api/users', () => {
           exp: 19930124509912485
         });
         request(app)
-          .post('/api/users/30')
+          .post('/users/30')
           .send({
             id: 30,
             firstName: 'Barney',
@@ -317,7 +317,7 @@ describe('route: /api/users', () => {
 
       it('returns the saved data', done => {
         request(app)
-          .post('/api/users/30')
+          .post('/users/30')
           .send({
             id: 30,
             firstName: 'Barney',
@@ -338,7 +338,7 @@ describe('route: /api/users', () => {
 
       it('uses the id from the route', done => {
         request(app)
-          .post('/api/users/30')
+          .post('/users/30')
           .send({
             id: 42,
             firstName: 'Barney',
@@ -359,7 +359,7 @@ describe('route: /api/users', () => {
 
       it('returns 404 if saving a user that does not exist', done => {
         request(app)
-          .post('/api/users/42')
+          .post('/users/42')
           .send({
             id: 42,
             firstName: 'Barney',
@@ -383,7 +383,7 @@ describe('route: /api/users', () => {
           exp: 19930124509912485
         });
         request(app)
-          .post('/api/users/42')
+          .post('/users/42')
           .send({
             id: 42,
             firstName: 'Barney',
@@ -402,7 +402,7 @@ describe('route: /api/users', () => {
       it('requires an API login', done => {
         mockJWT.verify.throws(new Error('no loggy loggy'));
         request(app)
-          .post('/api/users')
+          .post('/users')
           .send({
             firstName: 'Barney',
             lastName: 'Rubble',
@@ -417,7 +417,7 @@ describe('route: /api/users', () => {
 
       it('calls the save if admin', done => {
         request(app)
-          .post('/api/users')
+          .post('/users')
           .send({
             firstName: 'Barney',
             lastName: 'Rubble',
@@ -436,7 +436,7 @@ describe('route: /api/users', () => {
 
       it('returns the saved data', done => {
         request(app)
-          .post('/api/users')
+          .post('/users')
           .send({
             firstName: 'Barney',
             lastName: 'Rubble',
@@ -456,7 +456,7 @@ describe('route: /api/users', () => {
 
       it('clears the id if specified in the body', done => {
         request(app)
-          .post('/api/users')
+          .post('/users')
           .send({
             id: 42,
             firstName: 'Barney',
@@ -484,7 +484,7 @@ describe('route: /api/users', () => {
           exp: 19930124509912485
         });
         request(app)
-          .post('/api/users')
+          .post('/users')
           .send({
             firstName: 'Barney',
             lastName: 'Rubble',
@@ -508,7 +508,7 @@ describe('route: /api/users', () => {
     it('requires an API login', done => {
       mockJWT.verify.throws(new Error('no loggy loggy'));
       request(app)
-        .post('/api/users/30/password')
+        .post('/users/30/password')
         .send({
           password: 'IamNewPa$$worD',
           currentPassword: 'iAmCurr3ntPassw0rd'
@@ -522,7 +522,7 @@ describe('route: /api/users', () => {
 
     it('calls change', done => {
       request(app)
-        .post('/api/users/30/password')
+        .post('/users/30/password')
         .send({
           password: 'IamNewPa$$worD',
           currentPassword: 'iAmCurr3ntPassw0rd'
@@ -540,7 +540,7 @@ describe('route: /api/users', () => {
 
     it('returns 200 on success', done => {
       request(app)
-        .post('/api/users/30/password')
+        .post('/users/30/password')
         .send({
           password: 'IamNewPa$$worD',
           currentPassword: 'iAmCurr3ntPassw0rd'
@@ -554,7 +554,7 @@ describe('route: /api/users', () => {
     it('returns 400 on current password invalid', done => {
       passwordError = 'Invalid password';
       request(app)
-        .post('/api/users/30/password')
+        .post('/users/30/password')
         .send({
           password: 'IamNewPa$$worD',
           currentPassword: 'iAmCurr3ntPassw0rd'
@@ -569,7 +569,7 @@ describe('route: /api/users', () => {
     it('returns 500 on unknown failure', done => {
       passwordError = 'The database went stupid on us';
       request(app)
-        .post('/api/users/30/password')
+        .post('/users/30/password')
         .send({
           password: 'IamNewPa$$worD',
           currentPassword: 'iAmCurr3ntPassw0rd'
@@ -584,7 +584,7 @@ describe('route: /api/users', () => {
     describe('with just a password', () => {
       it('calls nothing', done => {
         request(app)
-          .post('/api/users/30/password')
+          .post('/users/30/password')
           .send({
             password: 'IamNewPa$$worD'
           })
@@ -596,7 +596,7 @@ describe('route: /api/users', () => {
 
       it('retuns 400', done => {
         request(app)
-          .post('/api/users/30/password')
+          .post('/users/30/password')
           .send({
             password: 'IamNewPa$$worD'
           })
@@ -610,7 +610,7 @@ describe('route: /api/users', () => {
     describe('with just a current password', () => {
       it('calls nothing', done => {
         request(app)
-          .post('/api/users/30/password')
+          .post('/users/30/password')
           .send({
             currentPassword: 'iAmCurr3ntPassw0rd'
           })
@@ -622,7 +622,7 @@ describe('route: /api/users', () => {
 
       it('retuns 400', done => {
         request(app)
-          .post('/api/users/30/password')
+          .post('/users/30/password')
           .send({
             currentPassword: 'iAmCurr3ntPassw0rd'
           })
@@ -643,7 +643,7 @@ describe('route: /api/users', () => {
         exp: 19930124509912485
       });
       request(app)
-        .post('/api/users/42/password')
+        .post('/users/42/password')
         .send({
           password: 'IamNewPa$$worD',
           currentPassword: 'iAmCurr3ntPassw0rd'
@@ -664,7 +664,7 @@ describe('route: /api/users', () => {
 
     it('calls reset', done => {
       request(app)
-        .post('/api/users/30/password/38849950394ADEF45CF')
+        .post('/users/30/password/38849950394ADEF45CF')
         .send({
           password: 'IamNewPa$$worD'
         })
@@ -679,7 +679,7 @@ describe('route: /api/users', () => {
 
     it('returns 200 on success', done => {
       request(app)
-        .post('/api/users/30/password/38849950394ADEF45CF')
+        .post('/users/30/password/38849950394ADEF45CF')
         .send({
           password: 'IamNewPa$$worD'
         })
@@ -692,7 +692,7 @@ describe('route: /api/users', () => {
     it('returns 400 on invalid token', done => {
       passwordError = 'Invalid token';
       request(app)
-        .post('/api/users/30/password/38849950394ADEF45CF')
+        .post('/users/30/password/38849950394ADEF45CF')
         .send({
           password: 'IamNewPa$$worD'
         })
@@ -705,7 +705,7 @@ describe('route: /api/users', () => {
     it('returns 400 on expired token', done => {
       passwordError = 'Expired token';
       request(app)
-        .post('/api/users/30/password/38849950394ADEF45CF')
+        .post('/users/30/password/38849950394ADEF45CF')
         .send({
           password: 'IamNewPa$$worD'
         })
@@ -717,7 +717,7 @@ describe('route: /api/users', () => {
 
     it('returns 400 without password', done => {
       request(app)
-        .post('/api/users/30/password/38849950394ADEF45CF')
+        .post('/users/30/password/38849950394ADEF45CF')
         .send({})
         .end((err, res) => {
           expect(passwordCall.get('method')).to.be.undefined;
@@ -729,7 +729,7 @@ describe('route: /api/users', () => {
     it('returns 500 on unknown failure', done => {
       passwordError = 'The database went stupid on us';
       request(app)
-        .post('/api/users/30/password/38849950394ADEF45CF')
+        .post('/users/30/password/38849950394ADEF45CF')
         .send({
           password: 'IamNewPa$$worD'
         })

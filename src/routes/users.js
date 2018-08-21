@@ -10,7 +10,7 @@ module.exports = (app, auth, pool) => {
   const userRepo = new Repository(users);
 
   app.get(
-    '/api/users',
+    '/users',
     auth.requireApiLogin.bind(auth),
     auth.requireRole('admin').bind(auth),
     (req, res) => {
@@ -18,7 +18,7 @@ module.exports = (app, auth, pool) => {
     }
   );
 
-  app.get('/api/users/current', auth.requireApiLogin.bind(auth), (req, res) => {
+  app.get('/users/current', auth.requireApiLogin.bind(auth), (req, res) => {
     (async () => {
       const u = auth.verifyToken(req);
       const user = await users.get(u.id);
@@ -31,7 +31,7 @@ module.exports = (app, auth, pool) => {
   });
 
   app.get(
-    '/api/users/:id',
+    '/users/:id',
     auth.requireApiLogin.bind(auth),
     auth.requireRoleOrId('admin').bind(auth),
     (req, res) => {
@@ -40,7 +40,7 @@ module.exports = (app, auth, pool) => {
   );
 
   app.post(
-    '/api/users',
+    '/users',
     auth.requireApiLogin.bind(auth),
     auth.requireRole('admin').bind(auth),
     (req, res) => {
@@ -49,7 +49,7 @@ module.exports = (app, auth, pool) => {
   );
 
   app.post(
-    '/api/users/:id',
+    '/users/:id',
     auth.requireApiLogin.bind(auth),
     auth.requireRoleOrId('admin').bind(auth),
     (req, res) => {
@@ -58,7 +58,7 @@ module.exports = (app, auth, pool) => {
   );
 
   app.post(
-    '/api/users/:id/password',
+    '/users/:id/password',
     auth.requireApiLogin.bind(auth),
     auth.requireRoleOrId('admin').bind(auth),
     (req, res) => {
@@ -87,7 +87,7 @@ module.exports = (app, auth, pool) => {
     }
   );
 
-  app.post('/api/users/:id/password/:token', (req, res) => {
+  app.post('/users/:id/password/:token', (req, res) => {
     (async () => {
       const pwd = req.body;
       try {
