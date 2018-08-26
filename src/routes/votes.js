@@ -4,8 +4,8 @@ const Repository = require('./repository');
 const VotesService = require('../services/votes');
 
 module.exports = (app, auth, pool) => {
-  const teas = new VotesService(pool);
-  const repository = new Repository(teas);
+  const votes = new VotesService(pool);
+  const repository = new Repository(votes);
 
   app.get('/votes', (req, res) => {
     repository.getAll(req, res);
