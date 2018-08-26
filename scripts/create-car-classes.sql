@@ -6,20 +6,42 @@ CREATE TABLE IF NOT EXISTS car_classes (
   CONSTRAINT car_classes_pk PRIMARY KEY (ID)
 );
 
-CREATE SEQUENCE IF NOT EXISTS car_class_id_sequence START WITH 1;
-
-DROP TRIGGER IF EXISTS bir_car_classes ON car_classes;
-DROP FUNCTION IF EXISTS bir_car_classes();
-
-CREATE FUNCTION bir_car_classes() RETURNS trigger as $bir_car_classes$
-BEGIN
-  IF NEW.id IS NULL THEN
-    NEW.id := nextval('car_class_id_sequence');
-  END IF;
-  RETURN NEW;
-END;
-$bir_car_classes$ LANGUAGE plpgsql;
-
-CREATE TRIGGER bir_car_classes BEFORE INSERT ON car_classes
-    FOR EACH ROW EXECUTE PROCEDURE bir_car_classes();
-
+WITH data AS (
+  SELECT 1 AS ID, 'A' AS NAME, 'Antique through 1954, Cars & Trucks' AS DESCRIPTION, true AS ACTIVE
+   UNION ALL
+  SELECT 2 AS ID, 'B' AS NAME, '1955-1962, Cars Only' AS DESCRIPTION, true AS ACTIVE
+   UNION ALL
+  SELECT 3 AS ID, 'C' AS NAME, '1963-1967, Cars Only' AS DESCRIPTION, true AS ACTIVE
+   UNION ALL
+  SELECT 4 AS ID, 'D' AS NAME, '1968-1970, Cars Only' AS DESCRIPTION, true AS ACTIVE
+   UNION ALL
+  SELECT 5 AS ID, 'E' AS NAME, '1965-1969 Non-Full Sized Cars (Chevelle, Nova, Mustang, Comet, Duster, etc)' AS DESCRIPTION, true AS ACTIVE
+   UNION ALL
+  SELECT 6 AS ID, 'F' AS NAME, '1971-1979, Cars Only' AS DESCRIPTION, true AS ACTIVE
+   UNION ALL
+  SELECT 7 AS ID, 'G' AS NAME, '1980-UP, Cars Only' AS DESCRIPTION, true AS ACTIVE
+   UNION ALL
+  SELECT 8 AS ID, 'H' AS NAME, 'Street Rods, through 1935' AS DESCRIPTION, true AS ACTIVE
+   UNION ALL
+  SELECT 9 AS ID, 'I' AS NAME, 'Street Rods, 1936-1948' AS DESCRIPTION, true AS ACTIVE
+   UNION ALL
+  SELECT 10 AS ID, 'J' AS NAME, 'Street/Modified, All Years' AS DESCRIPTION, true AS ACTIVE
+   UNION ALL
+  SELECT 11 AS ID, 'K' AS NAME, 'Customs, All Years' AS DESCRIPTION, true AS ACTIVE
+   UNION ALL
+  SELECT 12 AS ID, 'L' AS NAME, 'Corvettes, T-Birds, & Two-Seat Sports Cars, Up to 1996' AS DESCRIPTION, true AS ACTIVE
+   UNION ALL
+  SELECT 13 AS ID, 'M' AS NAME, 'Corvettes, T-Birds, & Two-Seat Sports Cars, 1997 & Up' AS DESCRIPTION, true AS ACTIVE
+   UNION ALL
+  SELECT 14 AS ID, 'N' AS NAME, 'Trucks and Vans, All Years' AS DESCRIPTION, true AS ACTIVE
+   UNION ALL
+  SELECT 15 AS ID, 'O' AS NAME, 'Tuner Cars, All Years' AS DESCRIPTION, true AS ACTIVE
+   UNION ALL
+  SELECT 16 AS ID, 'P' AS NAME, 'Motorcycles, All Years' AS DESCRIPTION, true AS ACTIVE
+   UNION ALL
+  SELECT 17 AS ID, 'Q' AS NAME, 'Old School Rat-Rods' AS DESCRIPTION, true AS ACTIVE
+) INSERT INTO car_classes (ID, NAME, DESCRIPTION, ACTIVE)
+SELECT ID, NAME, DESCRIPTION, ACTIVE FROM data
+ON CONFLICT (ID) DO UPDATE
+   SET NAME = EXCLUDED.NAME,
+       DESCRIPTION = EXCLUDED.DESCRIPTION;
