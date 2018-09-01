@@ -11,6 +11,7 @@ module.exports = (app, pool) => {
 
   require('../routes/athentication')(app, auth);
   require('../routes/car-classes')(app, auth, pool);
+  require('../routes/car-shows')(app, auth, pool);
   require('../routes/votes')(app, auth, pool);
   require('../routes/users')(app, auth, pool);
 };
