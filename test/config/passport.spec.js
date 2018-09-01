@@ -36,11 +36,12 @@ class MockPassword {
 let returnedUser;
 let getCalls;
 let getCallArgs;
+let userGetPromise = Promise.resolve();
 class MockUsers {
   get(u) {
     getCalls++;
     getCallArgs = u;
-    return Promise.resolve(returnedUser);
+    return userGetPromise;
   }
 }
 
@@ -99,6 +100,7 @@ describe('config: passport', () => {
           firstName: 'Karl',
           lastName: 'Smith'
         };
+        userGetPromise = Promise.resolve(returnedUser);
       });
 
       it('checks the password', async () => {
@@ -107,6 +109,7 @@ describe('config: passport', () => {
           'secretSauc3',
           () => {}
         );
+        await userGetPromise;
         expect(matchesCalls).to.equal(1);
         expect(matchesId).to.equal(1138);
         expect(matchesPassword).to.equal('secretSauc3');
