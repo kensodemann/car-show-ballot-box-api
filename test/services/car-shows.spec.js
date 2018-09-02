@@ -46,96 +46,112 @@ describe('service: car-classes', () => {
           id: 1,
           name: 'A',
           description: 'Antique through 1954, Cars & Trucks',
+          active: true,
           car_show_rid: 1
         },
         {
           id: 5,
           name: 'A',
           description: 'Antique through 1954, Cars & Trucks',
+          active: true,
           car_show_rid: 2
         },
         {
           id: 9,
           name: 'A',
           description: 'Antique through 1954, Cars & Trucks',
+          active: true,
           car_show_rid: 3
         },
         {
           id: 13,
           name: 'A',
           description: 'Antique through 1954, Cars & Trucks',
+          active: true,
           car_show_rid: 4
         },
         {
           id: 2,
           name: 'B',
           description: '1955-1962, Cars Only',
+          active: true,
           car_show_rid: 1
         },
         {
           id: 6,
           name: 'B',
           description: '1955-1962, Cars Only',
+          active: true,
           car_show_rid: 2
         },
         {
           id: 10,
           name: 'B',
           description: '1955-1962, Cars Only',
+          active: true,
           car_show_rid: 3
         },
         {
           id: 14,
           name: 'B',
           description: '1955-1962, Cars Only',
+          active: true,
           car_show_rid: 4
         },
         {
           id: 15,
           name: 'C',
           description: '1963-1967, Cars Only',
+          active: true,
           car_show_rid: 4
         },
         {
           id: 11,
           name: 'C',
           description: '1963-1967, Cars Only',
+          active: true,
           car_show_rid: 3
         },
         {
           id: 7,
           name: 'C',
           description: '1963-1967, Cars Only',
+          active: true,
           car_show_rid: 2
         },
         {
           id: 3,
           name: 'C',
           description: '1963-1967, Cars Only',
+          active: true,
           car_show_rid: 1
         },
         {
           id: 4,
           name: 'D',
           description: '1968-1970, Cars Only',
+          active: true,
           car_show_rid: 1
         },
         {
           id: 8,
           name: 'D',
           description: '1968-1970, Cars Only',
+          active: true,
           car_show_rid: 2
         },
         {
           id: 12,
           name: 'D',
           description: '1968-1970, Cars Only',
+          active: true,
           car_show_rid: 3
         },
         {
           id: 16,
           name: 'D',
           description: '1968-1970, Cars Only',
+          active: true,
           car_show_rid: 4
         }
       ]
@@ -185,22 +201,26 @@ describe('service: car-classes', () => {
             {
               id: 1,
               name: 'A',
-              description: 'Antique through 1954, Cars & Trucks'
+              description: 'Antique through 1954, Cars & Trucks',
+              active: true
             },
             {
               id: 2,
               name: 'B',
-              description: '1955-1962, Cars Only'
+              description: '1955-1962, Cars Only',
+              active: true
             },
             {
               id: 3,
               name: 'C',
-              description: '1963-1967, Cars Only'
+              description: '1963-1967, Cars Only',
+              active: true
             },
             {
               id: 4,
               name: 'D',
-              description: '1968-1970, Cars Only'
+              description: '1968-1970, Cars Only',
+              active: true
             }
           ]
         },
@@ -213,22 +233,26 @@ describe('service: car-classes', () => {
             {
               id: 5,
               name: 'A',
-              description: 'Antique through 1954, Cars & Trucks'
+              description: 'Antique through 1954, Cars & Trucks',
+              active: true
             },
             {
               id: 6,
               name: 'B',
-              description: '1955-1962, Cars Only'
+              description: '1955-1962, Cars Only',
+              active: true
             },
             {
               id: 7,
               name: 'C',
-              description: '1963-1967, Cars Only'
+              description: '1963-1967, Cars Only',
+              active: true
             },
             {
               id: 8,
               name: 'D',
-              description: '1968-1970, Cars Only'
+              description: '1968-1970, Cars Only',
+              active: true
             }
           ]
         },
@@ -241,22 +265,26 @@ describe('service: car-classes', () => {
             {
               id: 9,
               name: 'A',
-              description: 'Antique through 1954, Cars & Trucks'
+              description: 'Antique through 1954, Cars & Trucks',
+              active: true
             },
             {
               id: 10,
               name: 'B',
-              description: '1955-1962, Cars Only'
+              description: '1955-1962, Cars Only',
+              active: true
             },
             {
               id: 11,
               name: 'C',
-              description: '1963-1967, Cars Only'
+              description: '1963-1967, Cars Only',
+              active: true
             },
             {
               id: 12,
               name: 'D',
-              description: '1968-1970, Cars Only'
+              description: '1968-1970, Cars Only',
+              active: true
             }
           ]
         },
@@ -269,22 +297,26 @@ describe('service: car-classes', () => {
             {
               id: 13,
               name: 'A',
-              description: 'Antique through 1954, Cars & Trucks'
+              description: 'Antique through 1954, Cars & Trucks',
+              active: true
             },
             {
               id: 14,
               name: 'B',
-              description: '1955-1962, Cars Only'
+              description: '1955-1962, Cars Only',
+              active: true
             },
             {
               id: 15,
               name: 'C',
-              description: '1963-1967, Cars Only'
+              description: '1963-1967, Cars Only',
+              active: true
             },
             {
               id: 16,
               name: 'D',
-              description: '1968-1970, Cars Only'
+              description: '1968-1970, Cars Only',
+              active: true
             }
           ]
         }
@@ -346,22 +378,26 @@ describe('service: car-classes', () => {
           {
             id: 9,
             name: 'A',
-            description: 'Antique through 1954, Cars & Trucks'
+            description: 'Antique through 1954, Cars & Trucks',
+            active: true
           },
           {
             id: 10,
             name: 'B',
-            description: '1955-1962, Cars Only'
+            description: '1955-1962, Cars Only',
+            active: true
           },
           {
             id: 11,
             name: 'C',
-            description: '1963-1967, Cars Only'
+            description: '1963-1967, Cars Only',
+            active: true
           },
           {
             id: 12,
             name: 'D',
-            description: '1968-1970, Cars Only'
+            description: '1968-1970, Cars Only',
+            active: true
           }
         ]
       });
@@ -453,22 +489,26 @@ describe('service: car-classes', () => {
           {
             id: 5,
             name: 'A',
-            description: 'Antique through 1954, Cars & Trucks'
+            description: 'Antique through 1954, Cars & Trucks',
+            active: true
           },
           {
             id: 6,
             name: 'B',
-            description: '1955-1962, Cars Only'
+            description: '1955-1962, Cars Only',
+            active: true
           },
           {
             id: 7,
             name: 'C',
-            description: '1963-1967, Cars Only'
+            description: '1963-1967, Cars Only',
+            active: true
           },
           {
             id: 8,
             name: 'D',
-            description: '1968-1970, Cars Only'
+            description: '1968-1970, Cars Only',
+            active: true
           }
         ]
       });
@@ -478,6 +518,303 @@ describe('service: car-classes', () => {
       sinon.spy(pool.test_client, 'release');
       await service.getCurrent();
       expect(pool.test_client.release.calledOnce).to.be.true;
+    });
+  });
+
+  describe('save', () => {
+    describe('existing show', () => {
+      let testCarShow;
+      beforeEach(() => {
+        testCarShow = {
+          id: 2,
+          name: 'Waukesha Show 2016',
+          date: '2016-08-11',
+          year: 2016,
+          classes: [
+            {
+              id: 5,
+              name: 'A',
+              description: 'Antique through 1954, Cars & Trucks',
+              active: true
+            },
+            {
+              name: 'B',
+              description: '1955-1962, Cars Only',
+              active: true
+            },
+            {
+              id: 7,
+              name: 'C',
+              description: '1963-1967, Cars Only',
+              active: false
+            },
+            {
+              id: 8,
+              name: 'D',
+              description: '1968-1970, Cars Only',
+              active: true
+            }
+          ]
+        };
+      });
+
+      it('connects to the pool', () => {
+        sinon.spy(pool, 'connect');
+        service.save(testCarShow);
+        expect(pool.connect.calledOnce).to.be.true;
+      });
+
+      it('updates the show', async () => {
+        await service.save(testCarShow);
+        expect(
+          pool.test_client.query.calledWith(
+            'update car_shows set name = $1, date = $2, year = $3 where id = $4',
+            ['Waukesha Show 2016', '2016-08-11', 2016, 2]
+          )
+        ).to.be.true;
+      });
+
+      it('updates the existing classes', async () => {
+        await service.save(testCarShow);
+        expect(
+          pool.test_client.query.calledWith(
+            'update car_show_classes set name = $1, description = $2, active = $3, car_show_rid = $4 where id = $5',
+            ['A', 'Antique through 1954, Cars & Trucks', true, 2, 5]
+          )
+        ).to.be.true;
+        expect(
+          pool.test_client.query.calledWith(
+            'update car_show_classes set name = $1, description = $2, active = $3, car_show_rid = $4 where id = $5',
+            ['C', '1963-1967, Cars Only', false, 2, 7]
+          )
+        ).to.be.true;
+        expect(
+          pool.test_client.query.calledWith(
+            'update car_show_classes set name = $1, description = $2, active = $3, car_show_rid = $4 where id = $5',
+            ['D', '1968-1970, Cars Only', true, 2, 8]
+          )
+        ).to.be.true;
+      });
+
+      it('inserts any classes that were added', async () => {
+        await service.save(testCarShow);
+        expect(
+          pool.test_client.query.calledWith(
+            'insert into car_show_classes (name, description, active, car_show_rid) values ($1, $2, $3, $4)',
+            ['B', '1955-1962, Cars Only', true, 2]
+          )
+        ).to.be.true;
+      });
+
+      it('queries the show and classes for the show', async () => {
+        await service.save(testCarShow);
+        expect(
+          pool.test_client.query.calledWith(
+            'select * from car_shows where id = $1',
+            [2]
+          )
+        ).to.be.true;
+        expect(
+          pool.test_client.query.calledWith(
+            'select * from car_show_classes where car_show_rid = $1',
+            [2]
+          )
+        ).to.be.true;
+      });
+
+      it('returns the show as queried', async() => {
+        pool.test_client.query
+          .onCall(5)
+          .returns(Promise.resolve({ rows: [testData.carShows[1]] }));
+        pool.test_client.query
+          .onCall(6)
+          .returns(
+            Promise.resolve({
+              rows: testData.carShowClasses.filter(
+                cls => cls.car_show_rid === 2
+              )
+            })
+          );
+        const show = await service.save(testCarShow);
+        expect(show).to.deep.equal({
+          id: 2,
+          name: 'Waukesha Show 2016',
+          date: '2016-08-11',
+          year: 2016,
+          classes: [
+            {
+              id: 5,
+              name: 'A',
+              description: 'Antique through 1954, Cars & Trucks',
+              active: true
+            },
+            {
+              id: 6,
+              name: 'B',
+              description: '1955-1962, Cars Only',
+              active: true
+            },
+            {
+              id: 7,
+              name: 'C',
+              description: '1963-1967, Cars Only',
+              active: true
+            },
+            {
+              id: 8,
+              name: 'D',
+              description: '1968-1970, Cars Only',
+              active: true
+            }
+          ]
+        });
+      });
+
+      it('releases the client', async () => {
+        sinon.spy(pool.test_client, 'release');
+        await service.save(testCarShow);
+        expect(pool.test_client.release.calledOnce).to.be.true;
+      });
+    });
+
+    describe('new show', () => {
+      let testCarShow;
+      beforeEach(() => {
+        testCarShow = {
+          name: 'Waukesha Show 2016',
+          date: '2016-08-11',
+          year: 2016,
+          classes: [
+            {
+              name: 'A',
+              description: 'Antique through 1954, Cars & Trucks',
+              active: true
+            },
+            {
+              name: 'B',
+              description: '1955-1962, Cars Only',
+              active: false
+            },
+            {
+              name: 'D',
+              description: '1968-1970, Cars Only',
+              active: true
+            }
+          ]
+        };
+
+        pool.test_client.query
+          .onCall(0)
+          .returns(Promise.resolve({ rows: [{ id: 42 }] }));
+      });
+
+      it('connects to the pool', () => {
+        sinon.spy(pool, 'connect');
+        service.save(testCarShow);
+        expect(pool.connect.calledOnce).to.be.true;
+      });
+
+      it('inserts the show', async () => {
+        await service.save(testCarShow);
+        expect(
+          pool.test_client.query.calledWith(
+            'insert into car_shows (name, date, year) values ($1, $2, $3) returning id',
+            ['Waukesha Show 2016', '2016-08-11', 2016]
+          )
+        ).to.be.true;
+      });
+
+      it('insert the classes for the show', async () => {
+        await service.save(testCarShow);
+        expect(
+          pool.test_client.query.calledWith(
+            'insert into car_show_classes (name, description, active, car_show_rid) values ($1, $2, $3, $4)',
+            ['A', 'Antique through 1954, Cars & Trucks', true, 42]
+          )
+        ).to.be.true;
+        expect(
+          pool.test_client.query.calledWith(
+            'insert into car_show_classes (name, description, active, car_show_rid) values ($1, $2, $3, $4)',
+            ['B', '1955-1962, Cars Only', false, 42]
+          )
+        ).to.be.true;
+        expect(
+          pool.test_client.query.calledWith(
+            'insert into car_show_classes (name, description, active, car_show_rid) values ($1, $2, $3, $4)',
+            ['D', '1968-1970, Cars Only', true, 42]
+          )
+        ).to.be.true;
+      });
+
+      it('queries the show and classes for the dhow', async () => {
+        await service.save(testCarShow);
+        expect(
+          pool.test_client.query.calledWith(
+            'select * from car_shows where id = $1',
+            [42]
+          )
+        ).to.be.true;
+        expect(
+          pool.test_client.query.calledWith(
+            'select * from car_show_classes where car_show_rid = $1',
+            [42]
+          )
+        ).to.be.true;
+      });
+
+      it('returns the show as queried', async () => {
+        pool.test_client.query
+          .onCall(4)
+          .returns(Promise.resolve({ rows: [testData.carShows[1]] }));
+        pool.test_client.query
+          .onCall(5)
+          .returns(
+            Promise.resolve({
+              rows: testData.carShowClasses.filter(
+                cls => cls.car_show_rid === 2
+              )
+            })
+          );
+        const show = await service.save(testCarShow);
+        expect(show).to.deep.equal({
+          id: 2,
+          name: 'Waukesha Show 2016',
+          date: '2016-08-11',
+          year: 2016,
+          classes: [
+            {
+              id: 5,
+              name: 'A',
+              description: 'Antique through 1954, Cars & Trucks',
+              active: true
+            },
+            {
+              id: 6,
+              name: 'B',
+              description: '1955-1962, Cars Only',
+              active: true
+            },
+            {
+              id: 7,
+              name: 'C',
+              description: '1963-1967, Cars Only',
+              active: true
+            },
+            {
+              id: 8,
+              name: 'D',
+              description: '1968-1970, Cars Only',
+              active: true
+            }
+          ]
+        });
+      });
+
+      it('releases the client', async () => {
+        sinon.spy(pool.test_client, 'release');
+        await service.save(testCarShow);
+        expect(pool.test_client.release.calledOnce).to.be.true;
+      });
     });
   });
 });

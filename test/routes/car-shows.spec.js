@@ -14,12 +14,14 @@ describe('route: /car-classes', () => {
   let getAllStub;
   let getCurrentStub;
   let getStub;
+  let saveStub;
 
   class MockCarShowsService {
     constructor() {
       this.getAll = getAllStub;
       this.get = getStub;
       this.getCurrent = getCurrentStub;
+      this.save = saveStub;
     }
   }
 
@@ -52,22 +54,26 @@ describe('route: /car-classes', () => {
           {
             id: 1,
             name: 'A',
-            description: 'Antique through 1954, Cars & Trucks'
+            description: 'Antique through 1954, Cars & Trucks',
+            active: true
           },
           {
             id: 2,
             name: 'B',
-            description: '1955-1962, Cars Only'
+            description: '1955-1962, Cars Only',
+            active: true
           },
           {
             id: 3,
             name: 'C',
-            description: '1963-1967, Cars Only'
+            description: '1963-1967, Cars Only',
+            active: true
           },
           {
             id: 4,
             name: 'D',
-            description: '1968-1970, Cars Only'
+            description: '1968-1970, Cars Only',
+            active: true
           }
         ]
       },
@@ -80,22 +86,26 @@ describe('route: /car-classes', () => {
           {
             id: 5,
             name: 'A',
-            description: 'Antique through 1954, Cars & Trucks'
+            description: 'Antique through 1954, Cars & Trucks',
+            active: true
           },
           {
             id: 6,
             name: 'B',
-            description: '1955-1962, Cars Only'
+            description: '1955-1962, Cars Only',
+            active: true
           },
           {
             id: 7,
             name: 'C',
-            description: '1963-1967, Cars Only'
+            description: '1963-1967, Cars Only',
+            active: true
           },
           {
             id: 8,
             name: 'D',
-            description: '1968-1970, Cars Only'
+            description: '1968-1970, Cars Only',
+            active: true
           }
         ]
       },
@@ -108,22 +118,26 @@ describe('route: /car-classes', () => {
           {
             id: 9,
             name: 'A',
-            description: 'Antique through 1954, Cars & Trucks'
+            description: 'Antique through 1954, Cars & Trucks',
+            active: true
           },
           {
             id: 10,
             name: 'B',
-            description: '1955-1962, Cars Only'
+            description: '1955-1962, Cars Only',
+            active: true
           },
           {
             id: 11,
             name: 'C',
-            description: '1963-1967, Cars Only'
+            description: '1963-1967, Cars Only',
+            active: true
           },
           {
             id: 12,
             name: 'D',
-            description: '1968-1970, Cars Only'
+            description: '1968-1970, Cars Only',
+            active: true
           }
         ]
       },
@@ -136,22 +150,26 @@ describe('route: /car-classes', () => {
           {
             id: 13,
             name: 'A',
-            description: 'Antique through 1954, Cars & Trucks'
+            description: 'Antique through 1954, Cars & Trucks',
+            active: true
           },
           {
             id: 14,
             name: 'B',
-            description: '1955-1962, Cars Only'
+            description: '1955-1962, Cars Only',
+            active: true
           },
           {
             id: 15,
             name: 'C',
-            description: '1963-1967, Cars Only'
+            description: '1963-1967, Cars Only',
+            active: true
           },
           {
             id: 16,
             name: 'D',
-            description: '1968-1970, Cars Only'
+            description: '1968-1970, Cars Only',
+            active: true
           }
         ]
       }
@@ -159,6 +177,7 @@ describe('route: /car-classes', () => {
     getAllStub = sinon.stub().returns(Promise.resolve([]));
     getCurrentStub = sinon.stub().returns(Promise.resolve());
     getStub = sinon.stub().returns(Promise.resolve());
+    saveStub = sinon.stub().returns(Promise.resolve());
     proxyquire('../../src/routes/car-shows', {
       '../services/car-shows': MockCarShowsService
     })(app, auth, pool);
@@ -257,6 +276,133 @@ describe('route: /car-classes', () => {
           .end((err, res) => {
             expect(res.status).to.equal(200);
             expect(res.body).to.deep.equal(testData[3]);
+            done();
+          });
+      });
+    });
+  });
+
+  describe('post', () => {
+    let testCarShow;
+    beforeEach(() => {
+      testCarShow = {
+        name: 'Waukesha Show 2018',
+        date: '2017-08-14',
+        year: 2017,
+        classes: [
+          {
+            id: 13,
+            name: 'A',
+            description: 'Antique through 1954, Cars & Trucks',
+            active: true
+          },
+          {
+            id: 14,
+            name: 'B',
+            description: '1955-1962, Cars Only',
+            active: true
+          },
+          {
+            id: 15,
+            name: 'C',
+            description: '1963-1967, Cars Only',
+            active: true
+          },
+          {
+            id: 16,
+            name: 'D',
+            description: '1968-1970, Cars Only',
+            active: true
+          }
+        ]
+      };
+
+      saveStub.returns({ id: 15, ...testCarShow });
+    });
+
+    describe('a new show', () => {
+      it('calls the save method', done => {
+        request(app)
+          .post('/car-shows')
+          .send(testCarShow)
+          .end(() => {
+            expect(saveStub.calledOnce).to.be.true;
+            expect(saveStub.calledWith(testCarShow)).to.be.true;
+            done();
+          });
+      });
+
+      it('remove the ID if it is present', done => {
+        request(app)
+          .post('/car-shows')
+          .send({ id: 42, ...testCarShow })
+          .end(() => {
+            expect(saveStub.calledOnce).to.be.true;
+            expect(saveStub.calledWith(testCarShow)).to.be.true;
+            done();
+          });
+      });
+
+      it('returns the saved item', done => {
+        request(app)
+          .post('/car-shows')
+          .send(testCarShow)
+          .end((err, res) => {
+            expect(res.status).to.equal(200);
+            expect(res.body).to.deep.equal({ id: 15, ...testCarShow });
+            done();
+          });
+      });
+    });
+
+    describe('an existing show', () => {
+      let updatedCarShow;
+      beforeEach(() => {
+        updatedCarShow = { id: 73, ...testCarShow };
+        saveStub.returns(updatedCarShow);
+      });
+
+      it('calls the save method', done => {
+        request(app)
+          .post('/car-shows/73')
+          .send(updatedCarShow)
+          .end(() => {
+            expect(saveStub.calledOnce).to.be.true;
+            expect(saveStub.calledWith(updatedCarShow)).to.be.true;
+            done();
+          });
+      });
+
+      it('favors the ID from the URL', done => {
+        request(app)
+          .post('/car-shows/42')
+          .send(updatedCarShow)
+          .end(() => {
+            expect(saveStub.calledOnce).to.be.true;
+            expect(saveStub.calledWith({ ...updatedCarShow, id: 42 })).to.be
+              .true;
+            done();
+          });
+      });
+
+      it('returns the updated car show', done => {
+        request(app)
+          .post('/car-shows/42')
+          .send(updatedCarShow)
+          .end((err, res) => {
+            expect(res.status).to.equal(200);
+            expect(res.body).to.deep.equal(updatedCarShow);
+            done();
+          });
+      });
+
+      it('returns 404 if the show did not exist', done => {
+        saveStub.returns(undefined);
+        request(app)
+          .post('/car-shows/42')
+          .send(updatedCarShow)
+          .end((err, res) => {
+            expect(res.status).to.equal(404);
             done();
           });
       });
