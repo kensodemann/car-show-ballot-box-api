@@ -143,6 +143,10 @@ describe('service: car-classes', () => {
     service = new Service(pool);
   });
 
+  afterEach(() => {
+    pool.test_client.query.restore();
+  });
+
   describe('getAll', () => {
     it('connects to the pool', () => {
       sinon.spy(pool, 'connect');
@@ -380,6 +384,99 @@ describe('service: car-classes', () => {
     it('releases the client', async () => {
       sinon.spy(pool.test_client, 'release');
       await service.get(3);
+      expect(pool.test_client.release.calledOnce).to.be.true;
+    });
+  });
+
+  describe('get current', () => {
+    let clock;
+    beforeEach(() => {
+      clock = sinon.useFakeTimers(1471237200000);
+    });
+
+    afterEach(() => {
+      clock.restore();
+    });
+
+    it('connects to the pool', () => {
+      sinon.spy(pool, 'connect');
+      service.getCurrent();
+      expect(pool.connect.calledOnce).to.be.true;
+    });
+
+    it('queries the car shows', async () => {
+      await service.getCurrent();
+      expect(pool.test_client.query.calledOnce).to.be.true;
+      expect(
+        pool.test_client.query.calledWith(
+          'select * from car_shows where year = $1',
+          [2016]
+        )
+      ).to.be.true;
+    });
+
+    it('querys the classes if the car show query returns a show', async () => {
+      pool.test_client.query
+        .onCall(0)
+        .returns(Promise.resolve({ rows: [testData.carShows[1]] }));
+      await service.getCurrent();
+      expect(pool.test_client.query.calledTwice).to.be.true;
+      expect(
+        pool.test_client.query.calledWith(
+          'select * from car_show_classes where car_show_rid = $1',
+          [2]
+        )
+      ).to.be.true;
+    });
+
+    it('returns undefined if there is no current car show', async () => {
+      const show = await service.getCurrent();
+      expect(show).to.be.undefined;
+    });
+
+    it('returns the combined data', async () => {
+      pool.test_client.query
+        .onCall(0)
+        .returns(Promise.resolve({ rows: [testData.carShows[1]] }));
+      pool.test_client.query.onCall(1).returns(
+        Promise.resolve({
+          rows: testData.carShowClasses.filter(cls => cls.car_show_rid === 2)
+        })
+      );
+      const show = await service.getCurrent();
+      expect(show).to.deep.equal({
+        id: 2,
+        name: 'Waukesha Show 2016',
+        date: '2016-08-11',
+        year: 2016,
+        classes: [
+          {
+            id: 5,
+            name: 'A',
+            description: 'Antique through 1954, Cars & Trucks'
+          },
+          {
+            id: 6,
+            name: 'B',
+            description: '1955-1962, Cars Only'
+          },
+          {
+            id: 7,
+            name: 'C',
+            description: '1963-1967, Cars Only'
+          },
+          {
+            id: 8,
+            name: 'D',
+            description: '1968-1970, Cars Only'
+          }
+        ]
+      });
+    });
+
+    it('releases the client', async () => {
+      sinon.spy(pool.test_client, 'release');
+      await service.getCurrent();
       expect(pool.test_client.release.calledOnce).to.be.true;
     });
   });
