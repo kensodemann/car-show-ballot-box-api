@@ -228,11 +228,12 @@ describe('route: /car-classes', () => {
           });
       });
 
-      it('returns 404 if there is no data', done => {
+      it('returns an empty object if there is no data', done => {
         request(app)
           .get('/car-shows/current')
           .end((err, res) => {
-            expect(res.status).to.equal(404);
+            expect(res.status).to.equal(200);
+            expect(res.body).to.deep.equal({});
             done();
           });
       });

@@ -15,10 +15,6 @@ module.exports = (app, auth, pool) => {
   app.get(`${route}/current`, async (req, res) => {
     try {
       const data = await carShowService.getCurrent();
-      if (!data) {
-        res.status(404);
-        res.end();
-      }
       res.send(data);
     } catch (e) {
       console.error(e.stack);
