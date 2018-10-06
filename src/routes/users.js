@@ -86,25 +86,4 @@ module.exports = (app, auth, pool) => {
       })().catch(e => console.error(e.stack));
     }
   );
-
-  app.post('/users/:id/password/:token', (req, res) => {
-    (async () => {
-      const pwd = req.body;
-      try {
-        if (!pwd.password) {
-          throw new Error('Invalid parameters');
-        }
-
-        await password.reset(req.params.id, pwd.password, req.params.token);
-        res.send();
-      } catch (err) {
-        const msg = err.toString();
-        if (/Error: [Invalid|Expired]/.test(msg)) {
-          res.status(400).send({ reason: msg });
-        } else {
-          res.status(500).send({ reason: 'Unknown error' });
-        }
-      }
-    })().catch(e => console.error(e.stack));
-  });
 };
