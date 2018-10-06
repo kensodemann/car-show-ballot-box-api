@@ -1,6 +1,8 @@
 'use strict';
 
-module.exports = (app, auth) => {
+const auth = require('../services/authentication');
+
+module.exports = (app) => {
   app.post('/login', auth.authenticate.bind(auth));
 
   app.post('/logout', (req, res) => {

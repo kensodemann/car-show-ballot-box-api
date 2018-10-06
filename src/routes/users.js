@@ -1,12 +1,11 @@
 'use strict';
 
-const PasswordService = require('../services/password');
+const auth = require('../services/authentication');
+const password = require('../services/password');
 const Repository = require('./repository');
-const UsersService = require('../services/users');
+const users = require('../services/users');
 
-module.exports = (app, auth, pool) => {
-  const password = new PasswordService(pool);
-  const users = new UsersService(pool);
+module.exports = app => {
   const userRepo = new Repository(users);
 
   app.get(
@@ -76,6 +75,7 @@ module.exports = (app, auth, pool) => {
           );
           res.send({ success: true });
         } catch (err) {
+          console.log('we are in the catch');
           const msg = err.toString();
           if (/Error: Invalid/.test(msg)) {
             res.status(400).send({ reason: msg });

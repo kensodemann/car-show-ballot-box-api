@@ -1,12 +1,10 @@
 'use strict';
 
-module.exports = class Votes {
-  constructor(pool) {
-    this._pool = pool;
-  }
+const database = require('../config/database');
 
+class Votes {
   async getAll(year) {
-    const client = await this._pool.connect();
+    const client = await database.connect();
     const qres = await (year
       ? client.query('select * from votes where year = $1', [year])
       : client.query('select * from votes'));
@@ -15,7 +13,7 @@ module.exports = class Votes {
   }
 
   // async get(id) {
-  //   const client = await this._pool.connect();
+  //   const client = await pool.connect();
   //   const qres = await client.query(
   //     `select ${columns} from ${tables} where teas.id = $1`,
   //     [id]
@@ -26,7 +24,7 @@ module.exports = class Votes {
 
   // async save(tea) {
   //   let id = tea.id;
-  //   const client = await this._pool.connect();
+  //   const client = await pool.connect();
   //   if (id) {
   //     await client.query(
   //       `update teas set name = $1, tea_category_rid = $2, description = $3, instructions = $4, rating = $5, url = $6, price = $7 where id = $8`,
@@ -65,7 +63,7 @@ module.exports = class Votes {
   // }
 
   // async delete(id) {
-  //   const client = await this._pool.connect();
+  //   const client = await pool.connect();
   //   await client.query(`delete from tea_purchase_links where tea_rid = $1`, [
   //     id
   //   ]);
@@ -74,3 +72,5 @@ module.exports = class Votes {
   //   return {};
   // }
 };
+
+module.exports = new Votes();

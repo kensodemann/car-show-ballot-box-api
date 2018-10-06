@@ -1,19 +1,21 @@
 'use strict';
 
 const expect = require('chai').expect;
-const MockPool = require('../mocks/mock-pool');
+const MockClient = require('../mocks/mock-client');
+const pool = require('../../src/config/database');
 const sinon = require('sinon');
-const Service = require('../../src/services/car-shows');
+const service = require('../../src/services/car-shows');
 
 describe('service: car-classes', () => {
-  let pool;
-  let service;
+  let client;
   let testData;
 
   beforeEach(() => {
-    pool = new MockPool();
-    sinon.stub(pool.test_client, 'query');
-    pool.test_client.query.returns({ rows: [] });
+    client = new MockClient();
+    sinon.stub(pool, 'connect');
+    pool.connect.returns(Promise.resolve(client));
+    sinon.stub(client, 'query');
+    client.query.returns({ rows: [] });
     testData = {
       carShows: [
         {
@@ -156,38 +158,36 @@ describe('service: car-classes', () => {
         }
       ]
     };
-    service = new Service(pool);
   });
 
   afterEach(() => {
-    pool.test_client.query.restore();
+    pool.connect.restore();
   });
 
   describe('getAll', () => {
     it('connects to the pool', () => {
-      sinon.spy(pool, 'connect');
       service.getAll();
       expect(pool.connect.calledOnce).to.be.true;
     });
 
     it('queries the car shows and classes', async () => {
       await service.getAll();
-      expect(pool.test_client.query.calledTwice).to.be.true;
+      expect(client.query.calledTwice).to.be.true;
       expect(
-        pool.test_client.query.calledWith(
+        client.query.calledWith(
           'select * from car_shows order by year desc'
         )
       ).to.be.true;
       expect(
-        pool.test_client.query.calledWith('select * from car_show_classes')
+        client.query.calledWith('select * from car_show_classes')
       ).to.be.true;
     });
 
     it('returns the data', async () => {
-      pool.test_client.query
+      client.query
         .onCall(0)
         .returns(Promise.resolve({ rows: testData.carShows }));
-      pool.test_client.query
+      client.query
         .onCall(1)
         .returns(Promise.resolve({ rows: testData.carShowClasses }));
       const data = await service.getAll();
@@ -324,30 +324,29 @@ describe('service: car-classes', () => {
     });
 
     it('releases the client', async () => {
-      sinon.spy(pool.test_client, 'release');
+      sinon.spy(client, 'release');
       await service.getAll();
-      expect(pool.test_client.release.calledOnce).to.be.true;
+      expect(client.release.calledOnce).to.be.true;
     });
   });
 
   describe('get', () => {
     it('connects to the pool', () => {
-      sinon.spy(pool, 'connect');
       service.get(3);
       expect(pool.connect.calledOnce).to.be.true;
     });
 
     it('queries the car shows and classes', async () => {
       await service.get(3);
-      expect(pool.test_client.query.calledTwice).to.be.true;
+      expect(client.query.calledTwice).to.be.true;
       expect(
-        pool.test_client.query.calledWith(
+        client.query.calledWith(
           'select * from car_shows where id = $1',
           [3]
         )
       ).to.be.true;
       expect(
-        pool.test_client.query.calledWith(
+        client.query.calledWith(
           'select * from car_show_classes where car_show_rid = $1',
           [3]
         )
@@ -360,10 +359,10 @@ describe('service: car-classes', () => {
     });
 
     it('returns the data for the car show', async () => {
-      pool.test_client.query
+      client.query
         .onCall(0)
         .returns(Promise.resolve({ rows: [testData.carShows[2]] }));
-      pool.test_client.query.onCall(1).returns(
+      client.query.onCall(1).returns(
         Promise.resolve({
           rows: testData.carShowClasses.filter(cls => cls.car_show_rid === 3)
         })
@@ -404,7 +403,7 @@ describe('service: car-classes', () => {
     });
 
     it('returns the data for a car show without classes', async () => {
-      pool.test_client.query
+      client.query
         .onCall(0)
         .returns(Promise.resolve({ rows: [testData.carShows[2]] }));
       const data = await service.get(3);
@@ -418,9 +417,9 @@ describe('service: car-classes', () => {
     });
 
     it('releases the client', async () => {
-      sinon.spy(pool.test_client, 'release');
+      sinon.spy(client, 'release');
       await service.get(3);
-      expect(pool.test_client.release.calledOnce).to.be.true;
+      expect(client.release.calledOnce).to.be.true;
     });
   });
 
@@ -435,16 +434,15 @@ describe('service: car-classes', () => {
     });
 
     it('connects to the pool', () => {
-      sinon.spy(pool, 'connect');
       service.getCurrent();
       expect(pool.connect.calledOnce).to.be.true;
     });
 
     it('queries the car shows', async () => {
       await service.getCurrent();
-      expect(pool.test_client.query.calledOnce).to.be.true;
+      expect(client.query.calledOnce).to.be.true;
       expect(
-        pool.test_client.query.calledWith(
+        client.query.calledWith(
           'select * from car_shows where year = $1',
           [2016]
         )
@@ -452,13 +450,13 @@ describe('service: car-classes', () => {
     });
 
     it('querys the classes if the car show query returns a show', async () => {
-      pool.test_client.query
+      client.query
         .onCall(0)
         .returns(Promise.resolve({ rows: [testData.carShows[1]] }));
       await service.getCurrent();
-      expect(pool.test_client.query.calledTwice).to.be.true;
+      expect(client.query.calledTwice).to.be.true;
       expect(
-        pool.test_client.query.calledWith(
+        client.query.calledWith(
           'select * from car_show_classes where car_show_rid = $1',
           [2]
         )
@@ -471,10 +469,10 @@ describe('service: car-classes', () => {
     });
 
     it('returns the combined data', async () => {
-      pool.test_client.query
+      client.query
         .onCall(0)
         .returns(Promise.resolve({ rows: [testData.carShows[1]] }));
-      pool.test_client.query.onCall(1).returns(
+      client.query.onCall(1).returns(
         Promise.resolve({
           rows: testData.carShowClasses.filter(cls => cls.car_show_rid === 2)
         })
@@ -515,9 +513,9 @@ describe('service: car-classes', () => {
     });
 
     it('releases the client', async () => {
-      sinon.spy(pool.test_client, 'release');
+      sinon.spy(client, 'release');
       await service.getCurrent();
-      expect(pool.test_client.release.calledOnce).to.be.true;
+      expect(client.release.calledOnce).to.be.true;
     });
   });
 
@@ -559,7 +557,6 @@ describe('service: car-classes', () => {
       });
 
       it('connects to the pool', () => {
-        sinon.spy(pool, 'connect');
         service.save(testCarShow);
         expect(pool.connect.calledOnce).to.be.true;
       });
@@ -567,7 +564,7 @@ describe('service: car-classes', () => {
       it('updates the show', async () => {
         await service.save(testCarShow);
         expect(
-          pool.test_client.query.calledWith(
+          client.query.calledWith(
             'update car_shows set name = $1, date = $2, year = $3 where id = $4',
             ['Waukesha Show 2016', '2016-08-11', 2016, 2]
           )
@@ -577,19 +574,19 @@ describe('service: car-classes', () => {
       it('updates the existing classes', async () => {
         await service.save(testCarShow);
         expect(
-          pool.test_client.query.calledWith(
+          client.query.calledWith(
             'update car_show_classes set name = $1, description = $2, active = $3, car_show_rid = $4 where id = $5',
             ['A', 'Antique through 1954, Cars & Trucks', true, 2, 5]
           )
         ).to.be.true;
         expect(
-          pool.test_client.query.calledWith(
+          client.query.calledWith(
             'update car_show_classes set name = $1, description = $2, active = $3, car_show_rid = $4 where id = $5',
             ['C', '1963-1967, Cars Only', false, 2, 7]
           )
         ).to.be.true;
         expect(
-          pool.test_client.query.calledWith(
+          client.query.calledWith(
             'update car_show_classes set name = $1, description = $2, active = $3, car_show_rid = $4 where id = $5',
             ['D', '1968-1970, Cars Only', true, 2, 8]
           )
@@ -599,7 +596,7 @@ describe('service: car-classes', () => {
       it('inserts any classes that were added', async () => {
         await service.save(testCarShow);
         expect(
-          pool.test_client.query.calledWith(
+          client.query.calledWith(
             'insert into car_show_classes (name, description, active, car_show_rid) values ($1, $2, $3, $4)',
             ['B', '1955-1962, Cars Only', true, 2]
           )
@@ -609,13 +606,13 @@ describe('service: car-classes', () => {
       it('queries the show and classes for the show', async () => {
         await service.save(testCarShow);
         expect(
-          pool.test_client.query.calledWith(
+          client.query.calledWith(
             'select * from car_shows where id = $1',
             [2]
           )
         ).to.be.true;
         expect(
-          pool.test_client.query.calledWith(
+          client.query.calledWith(
             'select * from car_show_classes where car_show_rid = $1',
             [2]
           )
@@ -623,10 +620,10 @@ describe('service: car-classes', () => {
       });
 
       it('returns the show as queried', async() => {
-        pool.test_client.query
+        client.query
           .onCall(5)
           .returns(Promise.resolve({ rows: [testData.carShows[1]] }));
-        pool.test_client.query
+        client.query
           .onCall(6)
           .returns(
             Promise.resolve({
@@ -671,9 +668,9 @@ describe('service: car-classes', () => {
       });
 
       it('releases the client', async () => {
-        sinon.spy(pool.test_client, 'release');
+        sinon.spy(client, 'release');
         await service.save(testCarShow);
-        expect(pool.test_client.release.calledOnce).to.be.true;
+        expect(client.release.calledOnce).to.be.true;
       });
     });
 
@@ -703,13 +700,12 @@ describe('service: car-classes', () => {
           ]
         };
 
-        pool.test_client.query
+        client.query
           .onCall(0)
           .returns(Promise.resolve({ rows: [{ id: 42 }] }));
       });
 
       it('connects to the pool', () => {
-        sinon.spy(pool, 'connect');
         service.save(testCarShow);
         expect(pool.connect.calledOnce).to.be.true;
       });
@@ -717,7 +713,7 @@ describe('service: car-classes', () => {
       it('inserts the show', async () => {
         await service.save(testCarShow);
         expect(
-          pool.test_client.query.calledWith(
+          client.query.calledWith(
             'insert into car_shows (name, date, year) values ($1, $2, $3) returning id',
             ['Waukesha Show 2016', '2016-08-11', 2016]
           )
@@ -727,19 +723,19 @@ describe('service: car-classes', () => {
       it('insert the classes for the show', async () => {
         await service.save(testCarShow);
         expect(
-          pool.test_client.query.calledWith(
+          client.query.calledWith(
             'insert into car_show_classes (name, description, active, car_show_rid) values ($1, $2, $3, $4)',
             ['A', 'Antique through 1954, Cars & Trucks', true, 42]
           )
         ).to.be.true;
         expect(
-          pool.test_client.query.calledWith(
+          client.query.calledWith(
             'insert into car_show_classes (name, description, active, car_show_rid) values ($1, $2, $3, $4)',
             ['B', '1955-1962, Cars Only', false, 42]
           )
         ).to.be.true;
         expect(
-          pool.test_client.query.calledWith(
+          client.query.calledWith(
             'insert into car_show_classes (name, description, active, car_show_rid) values ($1, $2, $3, $4)',
             ['D', '1968-1970, Cars Only', true, 42]
           )
@@ -749,13 +745,13 @@ describe('service: car-classes', () => {
       it('queries the show and classes for the dhow', async () => {
         await service.save(testCarShow);
         expect(
-          pool.test_client.query.calledWith(
+          client.query.calledWith(
             'select * from car_shows where id = $1',
             [42]
           )
         ).to.be.true;
         expect(
-          pool.test_client.query.calledWith(
+          client.query.calledWith(
             'select * from car_show_classes where car_show_rid = $1',
             [42]
           )
@@ -763,10 +759,10 @@ describe('service: car-classes', () => {
       });
 
       it('returns the show as queried', async () => {
-        pool.test_client.query
+        client.query
           .onCall(4)
           .returns(Promise.resolve({ rows: [testData.carShows[1]] }));
-        pool.test_client.query
+        client.query
           .onCall(5)
           .returns(
             Promise.resolve({
@@ -811,9 +807,9 @@ describe('service: car-classes', () => {
       });
 
       it('releases the client', async () => {
-        sinon.spy(pool.test_client, 'release');
+        sinon.spy(client, 'release');
         await service.save(testCarShow);
-        expect(pool.test_client.release.calledOnce).to.be.true;
+        expect(client.release.calledOnce).to.be.true;
       });
     });
   });

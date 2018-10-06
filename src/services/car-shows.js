@@ -1,10 +1,8 @@
-module.exports = class CarShows {
-  constructor(pool) {
-    this._pool = pool;
-  }
+const pool = require('../config/database');
 
+class CarShows {
   async getAll() {
-    const client = await this._pool.connect();
+    const client = await pool.connect();
     const qres = await Promise.all([
       client.query('select * from car_shows order by year desc'),
       client.query('select * from car_show_classes')
@@ -14,7 +12,7 @@ module.exports = class CarShows {
   }
 
   async get(id) {
-    const client = await this._pool.connect();
+    const client = await pool.connect();
     const qres = await Promise.all([
       client.query('select * from car_shows where id = $1', [id]),
       client.query('select * from car_show_classes where car_show_rid = $1', [
@@ -27,7 +25,7 @@ module.exports = class CarShows {
 
   async getCurrent() {
     let classesRes;
-    const client = await this._pool.connect();
+    const client = await pool.connect();
     const year = new Date().getFullYear();
     const showsRes = await client.query(
       'select * from car_shows where year = $1',
@@ -45,7 +43,7 @@ module.exports = class CarShows {
 
   async save(show) {
     let id = show.id;
-    const client = await this._pool.connect();
+    const client = await pool.connect();
     if (id) {
       await client.query(
         'update car_shows set name = $1, date = $2, year = $3 where id = $4',
@@ -101,3 +99,5 @@ function merge(shows, classes) {
     })
   }));
 }
+
+module.exports = new CarShows();
