@@ -49,16 +49,6 @@ describe('route: /users', () => {
         ? Promise.reject(new Error(passwordError))
         : Promise.resolve();
     }
-
-    reset(id, password, token) {
-      passwordCall.set('method', 'reset');
-      passwordCall.set('id', id);
-      passwordCall.set('password', password);
-      passwordCall.set('token', token);
-      return passwordError
-        ? Promise.reject(new Error(passwordError))
-        : Promise.resolve();
-    }
   }
 
   beforeEach(() => {
@@ -651,90 +641,6 @@ describe('route: /users', () => {
         .end((err, res) => {
           expect(res.status).to.equal(403);
           expect(res.body).to.deep.equal({});
-          done();
-        });
-    });
-  });
-
-  describe('post reset password', () => {
-    beforeEach(() => {
-      passwordCall = new Map();
-      passwordError = undefined;
-    });
-
-    it('calls reset', done => {
-      request(app)
-        .post('/users/30/password/38849950394ADEF45CF')
-        .send({
-          password: 'IamNewPa$$worD'
-        })
-        .end((err, res) => {
-          expect(passwordCall.get('method')).to.equal('reset');
-          expect(passwordCall.get('id')).to.equal('30');
-          expect(passwordCall.get('password')).to.equal('IamNewPa$$worD');
-          expect(passwordCall.get('token')).to.equal('38849950394ADEF45CF');
-          done();
-        });
-    });
-
-    it('returns 200 on success', done => {
-      request(app)
-        .post('/users/30/password/38849950394ADEF45CF')
-        .send({
-          password: 'IamNewPa$$worD'
-        })
-        .end((err, res) => {
-          expect(res.status).to.equal(200);
-          done();
-        });
-    });
-
-    it('returns 400 on invalid token', done => {
-      passwordError = 'Invalid token';
-      request(app)
-        .post('/users/30/password/38849950394ADEF45CF')
-        .send({
-          password: 'IamNewPa$$worD'
-        })
-        .end((err, res) => {
-          expect(res.status).to.equal(400);
-          done();
-        });
-    });
-
-    it('returns 400 on expired token', done => {
-      passwordError = 'Expired token';
-      request(app)
-        .post('/users/30/password/38849950394ADEF45CF')
-        .send({
-          password: 'IamNewPa$$worD'
-        })
-        .end((err, res) => {
-          expect(res.status).to.equal(400);
-          done();
-        });
-    });
-
-    it('returns 400 without password', done => {
-      request(app)
-        .post('/users/30/password/38849950394ADEF45CF')
-        .send({})
-        .end((err, res) => {
-          expect(passwordCall.get('method')).to.be.undefined;
-          expect(res.status).to.equal(400);
-          done();
-        });
-    });
-
-    it('returns 500 on unknown failure', done => {
-      passwordError = 'The database went stupid on us';
-      request(app)
-        .post('/users/30/password/38849950394ADEF45CF')
-        .send({
-          password: 'IamNewPa$$worD'
-        })
-        .end((err, res) => {
-          expect(res.status).to.equal(500);
           done();
         });
     });

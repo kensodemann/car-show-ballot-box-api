@@ -1,7 +1,6 @@
 'use strict';
 
 const Encryption = require('./encryption');
-const moment = require('moment');
 
 module.exports = class Password {
   constructor(pool) {
@@ -44,28 +43,6 @@ module.exports = class Password {
     client.release();
   }
 
-  async reset(id, password, token) {
-    const reject =
-      this._missingParam(id, 'id') || this._missingParam(password, 'password');
-    if (reject) {
-      return reject;
-    }
-
-    const client = await this._pool.connect();
-
-    const t = await this._getToken(client, id);
-    if (!t || t.token !== token) {
-      return Promise.reject(new Error('Invalid password reset token'));
-    }
-    if (+moment() > (t.timestamp + (30 * 60 * 1000))) {
-      return Promise.reject(new Error('Expired password reset token'));
-    }
-
-    await this._updateCredentials(client, id, password);
-
-    client.release();
-  }
-
   async matches(id, password) {
     const client = await this._pool.connect();
     const m = this._passwordMatches(client, id, password);
@@ -81,14 +58,6 @@ module.exports = class Password {
   async _getCredentials(client, id) {
     const data = await client.query(
       'select * from user_credentials where user_rid = $1',
-      [id]
-    );
-    return data.rows && data.rows[0];
-  }
-
-  async _getToken(client, id) {
-    const data = await client.query(
-      'select * from password_reset_token where user_rid = $1',
       [id]
     );
     return data.rows && data.rows[0];
