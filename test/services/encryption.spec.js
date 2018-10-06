@@ -1,15 +1,13 @@
 'use strict';
 
+const crypto = require('crypto');
 const expect = require('chai').expect;
-const proxyquire = require('proxyquire');
+const service = require('../../src/services/encryption');
 const sinon = require('sinon');
 
 describe('service: encryption', () => {
   let mockBuffer;
-  let mockCrypto;
   let mockHmac;
-
-  let service;
 
   beforeEach(() => {
     mockBuffer = {};
@@ -21,17 +19,14 @@ describe('service: encryption', () => {
     });
     mockHmac.update.returns(mockHmac);
 
-    mockCrypto = sinon.stub({
-      randomBytes: function() {},
-      createHmac: function() {}
-    });
-    mockCrypto.randomBytes.returns(mockBuffer);
-    mockCrypto.createHmac.returns(mockHmac);
-
-    service = proxyquire('../../src/services/encryption', {
-      crypto: mockCrypto
-    });
+    sinon.stub(crypto, 'randomBytes').returns(mockBuffer);
+    sinon.stub(crypto, 'createHmac').returns(mockHmac);
   });
+
+  afterEach(() => {
+    crypto.randomBytes.restore();
+    crypto.createHmac.restore();
+  })
 
   it('exists', () => {
     expect(service).to.exist;
@@ -40,8 +35,8 @@ describe('service: encryption', () => {
   describe('salt', () => {
     it('gets 128 random bytes', () => {
       service.salt();
-      expect(mockCrypto.randomBytes.calledOnce).to.be.true;
-      expect(mockCrypto.randomBytes.calledWith(128)).to.be.true;
+      expect(crypto.randomBytes.calledOnce).to.be.true;
+      expect(crypto.randomBytes.calledWith(128)).to.be.true;
     });
 
     it('converts the byte buffer to a string', () => {
@@ -59,8 +54,8 @@ describe('service: encryption', () => {
   describe('hash', () => {
     it('creates a sha1 hmac', () => {
       service.hash('NaCl', 'shhh secret');
-      expect(mockCrypto.createHmac.calledOnce).to.be.true;
-      expect(mockCrypto.createHmac.calledWith('sha1', 'NaCl')).to.be.true;
+      expect(crypto.createHmac.calledOnce).to.be.true;
+      expect(crypto.createHmac.calledWith('sha1', 'NaCl')).to.be.true;
     });
 
     it('updates the hmac with the password', () => {
