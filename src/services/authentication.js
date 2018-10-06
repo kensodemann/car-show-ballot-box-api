@@ -2,6 +2,7 @@
 
 const jwt = require('jsonwebtoken');
 const passport = require('passport');
+const sessions = require('./sessions');
 
 class Authentication {
   authenticate(req, res, next) {
@@ -34,16 +35,26 @@ class Authentication {
     auth(req, res, next);
   }
 
-  refresh(req, res) {
-    try {
-      this._refreshToken(req, res);
-    } catch (err) {
-      res.send({ success: false });
+  async deauthenticate(req, res, next) {
+    const user = this._getUser(req);
+    if (user) {
+      await sessions.end(user.sessionId);
     }
+    next();
   }
 
-  requireApiLogin(req, res, next) {
-    if (this.isAuthenticated(req)) {
+  async refresh(req, res) {
+    const user = this._getUser(req);
+    if (user) {
+      if (await sessions.verify(user.id, user.sessionId)) {
+        return this._refreshToken(user, res);
+      }
+    }
+    res.send({ success: false });
+  }
+
+  async requireApiLogin(req, res, next) {
+    if (await this.isAuthenticated(req)) {
       next();
     } else {
       res.status(401);
@@ -53,7 +64,7 @@ class Authentication {
 
   requireRole(role) {
     return (req, res, next) => {
-      const user = this.verifyToken(req);
+      const user = this._getUser(req);
       if (user.roles.find(r => r === role)) {
         next();
       } else {
@@ -65,7 +76,7 @@ class Authentication {
 
   requireRoleOrId(role) {
     return (req, res, next) => {
-      const user = this.verifyToken(req);
+      const user = this._getUser(req);
       if (
         user.id.toString() === req.params.id ||
         user.roles.find(r => r === role)
@@ -78,13 +89,9 @@ class Authentication {
     };
   }
 
-  isAuthenticated(req) {
-    try {
-      this.verifyToken(req);
-    } catch (err) {
-      return false;
-    }
-    return true;
+  async isAuthenticated(req) {
+    const user = this._getUser(req);
+    return !!user && sessions.verify(user.id, user.sessionId);
   }
 
   verifyToken(req) {
@@ -102,8 +109,13 @@ class Authentication {
     return req.headers.authorization && req.headers.authorization.split(' ')[1];
   }
 
-  _refreshToken(req, res) {
-    let user = this.verifyToken(req);
+  _getUser(req) {
+    try {
+      return this.verifyToken(req);
+    } catch (err) {}
+  }
+
+  _refreshToken(user, res) {
     delete user.exp;
     delete user.iat;
     const token = this._generateToken(user);
