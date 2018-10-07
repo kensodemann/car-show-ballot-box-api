@@ -13,7 +13,7 @@ describe('service: votes', () => {
   beforeEach(() => {
     client = new MockClient();
     sinon.stub(database, 'connect');
-    database.connect.returns(Promise.resolve(client));
+    database.connect.resolves(client);
     testData = [
       {
         id: 1,
@@ -38,7 +38,7 @@ describe('service: votes', () => {
 
   afterEach(() => {
     database.connect.restore();
-  })
+  });
 
   describe('getAll', () => {
     it('connects to the pool', () => {
@@ -50,20 +50,21 @@ describe('service: votes', () => {
       sinon.spy(client, 'query');
       await service.getAll();
       expect(client.query.calledOnce).to.be.true;
-      expect(client.query.calledWith('select * from votes')).to.be
-        .true;
+      expect(client.query.calledWith('select * from votes')).to.be.true;
     });
 
     it('limits by year if given', async () => {
       sinon.spy(client, 'query');
       await service.getAll(2019);
       expect(client.query.calledOnce).to.be.true;
-      expect(client.query.calledWith('select * from votes where year = $1', [2019])).to.be.true;
+      expect(
+        client.query.calledWith('select * from votes where year = $1', [2019])
+      ).to.be.true;
     });
 
     it('returns the data', async () => {
       sinon.stub(client, 'query');
-      client.query.returns(Promise.resolve({ rows: testData }));
+      client.query.resolves({ rows: testData });
       const data = await service.getAll();
       expect(data).to.deep.equal(testData);
     });

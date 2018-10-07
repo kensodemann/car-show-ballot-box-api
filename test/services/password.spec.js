@@ -17,7 +17,7 @@ describe('service: password', () => {
     sinon.stub(encryption, 'salt');
     client = new MockClient();
     sinon.stub(pool, 'connect');
-    pool.connect.returns(Promise.resolve(client));
+    pool.connect.resolves(client);
   });
 
   afterEach(() => {
@@ -33,7 +33,7 @@ describe('service: password', () => {
   describe('initialize', () => {
     beforeEach(() => {
       sinon.stub(client, 'query');
-      client.query.returns(Promise.resolve({ rows: [] }));
+      client.query.resolves({ rows: [] });
     });
 
     it('rejects if no user ID is given', async () => {
@@ -218,7 +218,7 @@ describe('service: password', () => {
 
     it('resolves false if the user has no credentials record', async () => {
       sinon.stub(client, 'query');
-      client.query.returns(Promise.resolve({ rows: [] }));
+      client.query.resolves({ rows: [] });
       const match = await password.matches(42, 'IamPassw0rd');
       expect(match).to.be.false;
     });

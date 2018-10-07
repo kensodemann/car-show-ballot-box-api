@@ -13,7 +13,7 @@ describe('service: car-classes', () => {
   beforeEach(() => {
     client = new MockClient();
     sinon.stub(pool, 'connect');
-    pool.connect.returns(Promise.resolve(client));
+    pool.connect.resolves(client);
     sinon.stub(client, 'query');
     client.query.returns({ rows: [] });
     testData = {
@@ -174,22 +174,15 @@ describe('service: car-classes', () => {
       await service.getAll();
       expect(client.query.calledTwice).to.be.true;
       expect(
-        client.query.calledWith(
-          'select * from car_shows order by year desc'
-        )
+        client.query.calledWith('select * from car_shows order by year desc')
       ).to.be.true;
-      expect(
-        client.query.calledWith('select * from car_show_classes')
-      ).to.be.true;
+      expect(client.query.calledWith('select * from car_show_classes')).to.be
+        .true;
     });
 
     it('returns the data', async () => {
-      client.query
-        .onCall(0)
-        .returns(Promise.resolve({ rows: testData.carShows }));
-      client.query
-        .onCall(1)
-        .returns(Promise.resolve({ rows: testData.carShowClasses }));
+      client.query.onCall(0).resolves({ rows: testData.carShows });
+      client.query.onCall(1).resolves({ rows: testData.carShowClasses });
       const data = await service.getAll();
       expect(data).to.deep.equal([
         {
@@ -340,10 +333,7 @@ describe('service: car-classes', () => {
       await service.get(3);
       expect(client.query.calledTwice).to.be.true;
       expect(
-        client.query.calledWith(
-          'select * from car_shows where id = $1',
-          [3]
-        )
+        client.query.calledWith('select * from car_shows where id = $1', [3])
       ).to.be.true;
       expect(
         client.query.calledWith(
@@ -359,14 +349,10 @@ describe('service: car-classes', () => {
     });
 
     it('returns the data for the car show', async () => {
-      client.query
-        .onCall(0)
-        .returns(Promise.resolve({ rows: [testData.carShows[2]] }));
-      client.query.onCall(1).returns(
-        Promise.resolve({
-          rows: testData.carShowClasses.filter(cls => cls.car_show_rid === 3)
-        })
-      );
+      client.query.onCall(0).resolves({ rows: [testData.carShows[2]] });
+      client.query.onCall(1).resolves({
+        rows: testData.carShowClasses.filter(cls => cls.car_show_rid === 3)
+      });
       const data = await service.get(3);
       expect(data).to.deep.equal({
         id: 3,
@@ -403,9 +389,7 @@ describe('service: car-classes', () => {
     });
 
     it('returns the data for a car show without classes', async () => {
-      client.query
-        .onCall(0)
-        .returns(Promise.resolve({ rows: [testData.carShows[2]] }));
+      client.query.onCall(0).resolves({ rows: [testData.carShows[2]] });
       const data = await service.get(3);
       expect(data).to.deep.equal({
         id: 3,
@@ -442,17 +426,14 @@ describe('service: car-classes', () => {
       await service.getCurrent();
       expect(client.query.calledOnce).to.be.true;
       expect(
-        client.query.calledWith(
-          'select * from car_shows where year = $1',
-          [2016]
-        )
+        client.query.calledWith('select * from car_shows where year = $1', [
+          2016
+        ])
       ).to.be.true;
     });
 
     it('querys the classes if the car show query returns a show', async () => {
-      client.query
-        .onCall(0)
-        .returns(Promise.resolve({ rows: [testData.carShows[1]] }));
+      client.query.onCall(0).resolves({ rows: [testData.carShows[1]] });
       await service.getCurrent();
       expect(client.query.calledTwice).to.be.true;
       expect(
@@ -469,14 +450,10 @@ describe('service: car-classes', () => {
     });
 
     it('returns the combined data', async () => {
-      client.query
-        .onCall(0)
-        .returns(Promise.resolve({ rows: [testData.carShows[1]] }));
-      client.query.onCall(1).returns(
-        Promise.resolve({
-          rows: testData.carShowClasses.filter(cls => cls.car_show_rid === 2)
-        })
-      );
+      client.query.onCall(0).resolves({ rows: [testData.carShows[1]] });
+      client.query.onCall(1).resolves({
+        rows: testData.carShowClasses.filter(cls => cls.car_show_rid === 2)
+      });
       const show = await service.getCurrent();
       expect(show).to.deep.equal({
         id: 2,
@@ -606,10 +583,7 @@ describe('service: car-classes', () => {
       it('queries the show and classes for the show', async () => {
         await service.save(testCarShow);
         expect(
-          client.query.calledWith(
-            'select * from car_shows where id = $1',
-            [2]
-          )
+          client.query.calledWith('select * from car_shows where id = $1', [2])
         ).to.be.true;
         expect(
           client.query.calledWith(
@@ -619,19 +593,11 @@ describe('service: car-classes', () => {
         ).to.be.true;
       });
 
-      it('returns the show as queried', async() => {
-        client.query
-          .onCall(5)
-          .returns(Promise.resolve({ rows: [testData.carShows[1]] }));
-        client.query
-          .onCall(6)
-          .returns(
-            Promise.resolve({
-              rows: testData.carShowClasses.filter(
-                cls => cls.car_show_rid === 2
-              )
-            })
-          );
+      it('returns the show as queried', async () => {
+        client.query.onCall(5).resolves({ rows: [testData.carShows[1]] });
+        client.query.onCall(6).resolves({
+          rows: testData.carShowClasses.filter(cls => cls.car_show_rid === 2)
+        });
         const show = await service.save(testCarShow);
         expect(show).to.deep.equal({
           id: 2,
@@ -700,9 +666,7 @@ describe('service: car-classes', () => {
           ]
         };
 
-        client.query
-          .onCall(0)
-          .returns(Promise.resolve({ rows: [{ id: 42 }] }));
+        client.query.onCall(0).resolves({ rows: [{ id: 42 }] });
       });
 
       it('connects to the pool', () => {
@@ -745,10 +709,7 @@ describe('service: car-classes', () => {
       it('queries the show and classes for the dhow', async () => {
         await service.save(testCarShow);
         expect(
-          client.query.calledWith(
-            'select * from car_shows where id = $1',
-            [42]
-          )
+          client.query.calledWith('select * from car_shows where id = $1', [42])
         ).to.be.true;
         expect(
           client.query.calledWith(
@@ -759,18 +720,10 @@ describe('service: car-classes', () => {
       });
 
       it('returns the show as queried', async () => {
-        client.query
-          .onCall(4)
-          .returns(Promise.resolve({ rows: [testData.carShows[1]] }));
-        client.query
-          .onCall(5)
-          .returns(
-            Promise.resolve({
-              rows: testData.carShowClasses.filter(
-                cls => cls.car_show_rid === 2
-              )
-            })
-          );
+        client.query.onCall(4).resolves({ rows: [testData.carShows[1]] });
+        client.query.onCall(5).resolves({
+          rows: testData.carShowClasses.filter(cls => cls.car_show_rid === 2)
+        });
         const show = await service.save(testCarShow);
         expect(show).to.deep.equal({
           id: 2,

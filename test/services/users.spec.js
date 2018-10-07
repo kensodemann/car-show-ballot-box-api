@@ -15,7 +15,7 @@ describe('service: users', () => {
   beforeEach(() => {
     client = new MockClient();
     sinon.stub(pool, 'connect');
-    pool.connect.returns(Promise.resolve(client));
+    pool.connect.resolves(client);
     testData = [
       {
         id: 1,
@@ -52,7 +52,7 @@ describe('service: users', () => {
 
     it('resolves the data', async () => {
       sinon.stub(client, 'query');
-      client.query.returns(Promise.resolve({ rows: testData }));
+      client.query.resolves({ rows: testData });
       const data = await service.getAll();
       expect(data).to.deep.equal(testData);
     });
@@ -125,7 +125,7 @@ describe('service: users', () => {
 
     it('resolves undefined if not found', async () => {
       sinon.stub(client, 'query');
-      client.query.returns(Promise.resolve({ rows: [] }));
+      client.query.resolves({ rows: [] });
       const data = await service.get(42);
       expect(data).to.be.undefined;
     });
@@ -208,7 +208,7 @@ describe('service: users', () => {
 
       it('resolves empty if there was no user to update', async () => {
         sinon.stub(client, 'query');
-        client.query.returns(Promise.resolve({ rows: [] }));
+        client.query.resolves({ rows: [] });
         const user = await service.save({
           id: 4273,
           firstName: 'Tess',

@@ -33,7 +33,7 @@ describe('service: car-classes', () => {
     ];
     client = new MockClient();
     sinon.stub(database, 'connect');
-    database.connect.returns(Promise.resolve(client));
+    database.connect.resolves(client);
   });
 
   afterEach(() => {
@@ -55,7 +55,7 @@ describe('service: car-classes', () => {
 
     it('returns the data', async () => {
       sinon.stub(client, 'query');
-      client.query.returns(Promise.resolve({ rows: testData }));
+      client.query.resolves({ rows: testData });
       const data = await service.getAll();
       expect(data).to.deep.equal(testData);
     });

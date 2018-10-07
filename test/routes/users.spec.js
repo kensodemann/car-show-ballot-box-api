@@ -53,21 +53,21 @@ describe('route: /users', () => {
       iat: 'whatever',
       exp: 19930124509912485
     });
-    sinon.stub(users, 'getAll').returns(Promise.resolve(testData));
+    sinon.stub(users, 'getAll').resolves(testData);
     sinon
       .stub(users, 'get')
       .withArgs(1138)
-      .returns(Promise.resolve({
+      .resolves({
         id: 1138,
         firstName: 'Teddy',
         lastName: 'Senspeck',
         roles: ['admin']
-      }));
-    users.get.withArgs('30').returns(Promise.resolve({
+      });
+    users.get.withArgs('30').resolves({
       id: 30,
       firstName: 'Barney',
       lastName: 'Rubble'
-    }));
+    });
     sinon.stub(users, 'save');
   });
 
@@ -276,12 +276,12 @@ describe('route: /users', () => {
       });
 
       it('returns the saved data', done => {
-        users.save.returns(Promise.resolve({
+        users.save.resolves({
           id: 30,
           firstName: 'Barney',
           lastName: 'Rubble',
           email: 'barney@rubble.kings.io'
-        }));
+        });
         request(app)
           .post('/users/30')
           .send({
@@ -401,12 +401,12 @@ describe('route: /users', () => {
       });
 
       it('returns the saved data', done => {
-        users.save.returns(Promise.resolve({
+        users.save.resolves({
           id: 314159,
           firstName: 'Barney',
           lastName: 'Rubble',
           email: 'barney@rubble.kings.io'
-        }));
+        });
         request(app)
           .post('/users')
           .send({
