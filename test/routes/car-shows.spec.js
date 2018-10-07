@@ -257,7 +257,7 @@ describe('route: /car-shows', () => {
       });
 
       it('returns the data', done => {
-        carShows.get.resolves({...testData[3]});
+        carShows.get.resolves({ ...testData[3] });
         request(app)
           .get('/car-shows/42')
           .end((err, res) => {
