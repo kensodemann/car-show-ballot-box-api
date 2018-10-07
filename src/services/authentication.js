@@ -3,7 +3,7 @@
 const jwt = require('jsonwebtoken');
 const passport = require('passport');
 
-module.exports = class AuthenticationService {
+class Authentication {
   authenticate(req, res, next) {
     const auth = passport.authenticate('local', (err, user) => {
       if (err) {
@@ -66,7 +66,10 @@ module.exports = class AuthenticationService {
   requireRoleOrId(role) {
     return (req, res, next) => {
       const user = this.verifyToken(req);
-      if (user.id.toString() === req.params.id || user.roles.find(r => r === role)) {
+      if (
+        user.id.toString() === req.params.id ||
+        user.roles.find(r => r === role)
+      ) {
         next();
       } else {
         res.status(403);
@@ -110,4 +113,6 @@ module.exports = class AuthenticationService {
       token: token
     });
   }
-};
+}
+
+module.exports = new Authentication();

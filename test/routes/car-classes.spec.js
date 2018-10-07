@@ -1,41 +1,18 @@
 'use strict';
 
+const carClasses = require('../../src/services/car-classes');
 const expect = require('chai').expect;
 const express = require('express');
-const MockPool = require('../mocks/mock-pool');
-const proxyquire = require('proxyquire');
 const request = require('supertest');
 const sinon = require('sinon');
 
 describe('route: /car-classes', () => {
-  let app;
+  const app = express();
+  require('../../src/config/express')(app);
+  require('../../src/routes/car-classes')(app);
   let testData;
 
-  class MockCarClassesService {
-    getAll() {
-      return Promise.resolve(testData);
-    }
-  }
-
   beforeEach(() => {
-    const mockJWT = {};
-    const AuthService = proxyquire('../../src/services/authentication', {
-      jsonwebtoken: mockJWT
-    });
-    sinon.stub(mockJWT, 'verify');
-    mockJWT.verify.returns({
-      id: 1138,
-      firstName: 'Ted',
-      lastName: 'Senspeck',
-      roles: ['admin'],
-      iat: 'whatever',
-      exp: 19930124509912485
-    });
-    const auth = new AuthService();
-
-    app = express();
-    require('../../src/config/express')(app);
-    const pool = new MockPool();
     testData = [
       {
         id: 1,
@@ -53,13 +30,14 @@ describe('route: /car-classes', () => {
         description: 'Not a tea'
       }
     ];
-    proxyquire('../../src/routes/car-classes', {
-      '../services/car-classes': MockCarClassesService
-    })(app, auth, pool);
+    sinon.stub(carClasses, 'getAll').resolves([]);
   });
+
+  afterEach(() => carClasses.getAll.restore());
 
   describe('get', () => {
     it('returns the data', done => {
+      carClasses.getAll.resolves([...testData]);
       request(app)
         .get('/car-classes')
         .end((err, res) => {

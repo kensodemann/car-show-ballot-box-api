@@ -2,16 +2,13 @@
 
 const express = require('express');
 const path = require('path');
-const AuthenticationService = require('../services/authentication');
 
-module.exports = (app, pool) => {
-  const auth = new AuthenticationService();
-
+module.exports = app => {
   app.use('/', express.static(path.join(__dirname, '/../../dist')));
 
-  require('../routes/athentication')(app, auth);
-  require('../routes/car-classes')(app, auth, pool);
-  require('../routes/car-shows')(app, auth, pool);
-  require('../routes/votes')(app, auth, pool);
-  require('../routes/users')(app, auth, pool);
+  require('../routes/athentication')(app);
+  require('../routes/car-classes')(app);
+  require('../routes/car-shows')(app);
+  require('../routes/users')(app);
+  require('../routes/votes')(app);
 };

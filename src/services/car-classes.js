@@ -1,14 +1,14 @@
 'use strict';
 
-module.exports = class CarClasses {
-  constructor(pool) {
-    this._pool = pool;
-  }
+const pool = require('../config/database');
 
+class CarClasses {
   async getAll() {
-    const client = await this._pool.connect();
+    const client = await pool.connect();
     const qres = await client.query('select * from car_classes');
     client.release();
     return qres.rows;
   }
 };
+
+module.exports = new CarClasses();

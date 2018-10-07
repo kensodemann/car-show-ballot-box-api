@@ -1,11 +1,10 @@
 'use strict';
 
 const Repository = require('./repository');
-const CarShowsService = require('../services/car-shows');
+const carShows = require('../services/car-shows');
 
-module.exports = (app, auth, pool) => {
-  const carShowService = new CarShowsService(pool);
-  const repository = new Repository(carShowService);
+module.exports = (app) => {
+  const repository = new Repository(carShows);
   const route = '/car-shows';
 
   app.get(`${route}`, (req, res) => {
@@ -14,7 +13,7 @@ module.exports = (app, auth, pool) => {
 
   app.get(`${route}/current`, async (req, res) => {
     try {
-      const data = await carShowService.getCurrent();
+      const data = await carShows.getCurrent();
       res.send(data);
     } catch (e) {
       console.error(e.stack);

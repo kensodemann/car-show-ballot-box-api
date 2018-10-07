@@ -1,49 +1,18 @@
 'use strict';
 
+const carShows = require('../../src/services/car-shows');
 const expect = require('chai').expect;
 const express = require('express');
-const MockPool = require('../mocks/mock-pool');
-const proxyquire = require('proxyquire');
 const request = require('supertest');
 const sinon = require('sinon');
 
-describe('route: /car-classes', () => {
-  let app;
+describe('route: /car-shows', () => {
+  const app = express();
+  require('../../src/config/express')(app);
+  require('../../src/routes/car-shows')(app);
   let testData;
 
-  let getAllStub;
-  let getCurrentStub;
-  let getStub;
-  let saveStub;
-
-  class MockCarShowsService {
-    constructor() {
-      this.getAll = getAllStub;
-      this.get = getStub;
-      this.getCurrent = getCurrentStub;
-      this.save = saveStub;
-    }
-  }
-
   beforeEach(() => {
-    const mockJWT = {};
-    const AuthService = proxyquire('../../src/services/authentication', {
-      jsonwebtoken: mockJWT
-    });
-    sinon.stub(mockJWT, 'verify');
-    mockJWT.verify.returns({
-      id: 1138,
-      firstName: 'Ted',
-      lastName: 'Senspeck',
-      roles: ['admin'],
-      iat: 'whatever',
-      exp: 19930124509912485
-    });
-    const auth = new AuthService();
-
-    app = express();
-    require('../../src/config/express')(app);
-    const pool = new MockPool();
     testData = [
       {
         id: 1,
@@ -174,23 +143,24 @@ describe('route: /car-classes', () => {
         ]
       }
     ];
-    getAllStub = sinon.stub().returns(Promise.resolve([]));
-    getCurrentStub = sinon.stub().returns(Promise.resolve());
-    getStub = sinon.stub().returns(Promise.resolve());
-    saveStub = sinon.stub().returns(Promise.resolve());
-    proxyquire('../../src/routes/car-shows', {
-      '../services/car-shows': MockCarShowsService
-    })(app, auth, pool);
   });
 
   describe('get', () => {
     describe('all', () => {
+      beforeEach(() => {
+        sinon.stub(carShows, 'getAll').resolves([]);
+      });
+
+      afterEach(() => {
+        carShows.getAll.restore();
+      });
+
       it('calls the getAll method', done => {
         request(app)
           .get('/car-shows')
           .end(() => {
-            expect(getAllStub.calledOnce).to.be.true;
-            expect(getAllStub.calledWithExactly()).to.be.true;
+            expect(carShows.getAll.calledOnce).to.be.true;
+            expect(carShows.getAll.calledWithExactly()).to.be.true;
             done();
           });
       });
@@ -206,7 +176,7 @@ describe('route: /car-classes', () => {
       });
 
       it('returns the data', done => {
-        getAllStub.returns(testData);
+        carShows.getAll.resolves(testData);
         request(app)
           .get('/car-shows')
           .end((err, res) => {
@@ -218,12 +188,20 @@ describe('route: /car-classes', () => {
     });
 
     describe('current', () => {
+      beforeEach(() => {
+        sinon.stub(carShows, 'getCurrent').resolves();
+      });
+
+      afterEach(() => {
+        carShows.getCurrent.restore();
+      });
+
       it('calls the getCurrent method', done => {
         request(app)
           .get('/car-shows/current')
           .end(() => {
-            expect(getCurrentStub.calledOnce).to.be.true;
-            expect(getCurrentStub.calledWithExactly()).to.be.true;
+            expect(carShows.getCurrent.calledOnce).to.be.true;
+            expect(carShows.getCurrent.calledWithExactly()).to.be.true;
             done();
           });
       });
@@ -239,7 +217,7 @@ describe('route: /car-classes', () => {
       });
 
       it('returns the data', done => {
-        getCurrentStub.returns(testData[3]);
+        carShows.getCurrent.resolves({ ...testData[3] });
         request(app)
           .get('/car-shows/current')
           .end((err, res) => {
@@ -251,12 +229,20 @@ describe('route: /car-classes', () => {
     });
 
     describe('by id', () => {
+      beforeEach(() => {
+        sinon.stub(carShows, 'get').resolves();
+      });
+
+      afterEach(() => {
+        carShows.get.restore();
+      });
+
       it('calls the get method', done => {
         request(app)
           .get('/car-shows/42')
           .end(() => {
-            expect(getStub.calledOnce).to.be.true;
-            expect(getStub.calledWithExactly('42')).to.be.true;
+            expect(carShows.get.calledOnce).to.be.true;
+            expect(carShows.get.calledWithExactly('42')).to.be.true;
             done();
           });
       });
@@ -271,7 +257,7 @@ describe('route: /car-classes', () => {
       });
 
       it('returns the data', done => {
-        getStub.returns(testData[3]);
+        carShows.get.resolves({...testData[3]});
         request(app)
           .get('/car-shows/42')
           .end((err, res) => {
@@ -318,17 +304,25 @@ describe('route: /car-classes', () => {
         ]
       };
 
-      saveStub.returns({ id: 15, ...testCarShow });
+      sinon.stub(carShows, 'save');
+    });
+
+    afterEach(() => {
+      carShows.save.restore();
     });
 
     describe('a new show', () => {
+      beforeEach(() => {
+        carShows.save.resolves({ id: 15, ...testCarShow });
+      });
+
       it('calls the save method', done => {
         request(app)
           .post('/car-shows')
           .send(testCarShow)
           .end(() => {
-            expect(saveStub.calledOnce).to.be.true;
-            expect(saveStub.calledWith(testCarShow)).to.be.true;
+            expect(carShows.save.calledOnce).to.be.true;
+            expect(carShows.save.calledWith(testCarShow)).to.be.true;
             done();
           });
       });
@@ -338,8 +332,8 @@ describe('route: /car-classes', () => {
           .post('/car-shows')
           .send({ id: 42, ...testCarShow })
           .end(() => {
-            expect(saveStub.calledOnce).to.be.true;
-            expect(saveStub.calledWith(testCarShow)).to.be.true;
+            expect(carShows.save.calledOnce).to.be.true;
+            expect(carShows.save.calledWith(testCarShow)).to.be.true;
             done();
           });
       });
@@ -360,7 +354,7 @@ describe('route: /car-classes', () => {
       let updatedCarShow;
       beforeEach(() => {
         updatedCarShow = { id: 73, ...testCarShow };
-        saveStub.returns(updatedCarShow);
+        carShows.save.resolves({ ...updatedCarShow });
       });
 
       it('calls the save method', done => {
@@ -368,8 +362,8 @@ describe('route: /car-classes', () => {
           .post('/car-shows/73')
           .send(updatedCarShow)
           .end(() => {
-            expect(saveStub.calledOnce).to.be.true;
-            expect(saveStub.calledWith(updatedCarShow)).to.be.true;
+            expect(carShows.save.calledOnce).to.be.true;
+            expect(carShows.save.calledWith(updatedCarShow)).to.be.true;
             done();
           });
       });
@@ -379,9 +373,9 @@ describe('route: /car-classes', () => {
           .post('/car-shows/42')
           .send(updatedCarShow)
           .end(() => {
-            expect(saveStub.calledOnce).to.be.true;
-            expect(saveStub.calledWith({ ...updatedCarShow, id: 42 })).to.be
-              .true;
+            expect(carShows.save.calledOnce).to.be.true;
+            expect(carShows.save.calledWith({ ...updatedCarShow, id: 42 })).to
+              .be.true;
             done();
           });
       });
@@ -398,7 +392,7 @@ describe('route: /car-classes', () => {
       });
 
       it('returns 404 if the show did not exist', done => {
-        saveStub.returns(undefined);
+        carShows.save.resolves(undefined);
         request(app)
           .post('/car-shows/42')
           .send(updatedCarShow)
