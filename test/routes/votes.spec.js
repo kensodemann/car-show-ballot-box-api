@@ -70,7 +70,7 @@ describe('route: /votes', () => {
   afterEach(() => {
     auth.isAuthenticated.restore();
     votes.getAll.restore();
-  })
+  });
 
   describe('get', () => {
     registerGetTests();

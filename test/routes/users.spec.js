@@ -236,12 +236,14 @@ describe('route: /users', () => {
           })
           .end((err, res) => {
             expect(users.save.calledOnce).to.be.true;
-            expect(users.save.calledWith({
-              id: 30,
-              firstName: 'Barney',
-              lastName: 'Rubble',
-              email: 'barney@rubble.kings.io'
-            })).to.be.true;
+            expect(
+              users.save.calledWith({
+                id: 30,
+                firstName: 'Barney',
+                lastName: 'Rubble',
+                email: 'barney@rubble.kings.io'
+              })
+            ).to.be.true;
             done();
           });
       });
@@ -265,12 +267,14 @@ describe('route: /users', () => {
           })
           .end((err, res) => {
             expect(users.save.calledOnce).to.be.true;
-            expect(users.save.calledWith({
-              id: 30,
-              firstName: 'Barney',
-              lastName: 'Rubble',
-              email: 'barney@rubble.kings.io'
-            })).to.be.true;
+            expect(
+              users.save.calledWith({
+                id: 30,
+                firstName: 'Barney',
+                lastName: 'Rubble',
+                email: 'barney@rubble.kings.io'
+              })
+            ).to.be.true;
             done();
           });
       });
@@ -313,12 +317,14 @@ describe('route: /users', () => {
           })
           .end((err, res) => {
             expect(users.save.calledOnce).to.be.true;
-            expect(users.save.calledWith({
-              id: 30,
-              firstName: 'Barney',
-              lastName: 'Rubble',
-              email: 'barney@rubble.kings.io'
-            }));
+            expect(
+              users.save.calledWith({
+                id: 30,
+                firstName: 'Barney',
+                lastName: 'Rubble',
+                email: 'barney@rubble.kings.io'
+              })
+            );
             done();
           });
       });
@@ -391,11 +397,13 @@ describe('route: /users', () => {
           })
           .end((err, res) => {
             expect(users.save.calledOnce).to.be.true;
-            expect(users.save.calledWith({
-              firstName: 'Barney',
-              lastName: 'Rubble',
-              email: 'barney@rubble.kings.io'
-            }));
+            expect(
+              users.save.calledWith({
+                firstName: 'Barney',
+                lastName: 'Rubble',
+                email: 'barney@rubble.kings.io'
+              })
+            );
             done();
           });
       });
@@ -437,11 +445,13 @@ describe('route: /users', () => {
           })
           .end((err, res) => {
             expect(users.save.calledOnce).to.be.true;
-            expect(users.save.calledWith({
-              firstName: 'Barney',
-              lastName: 'Rubble',
-              email: 'barney@rubble.kings.io'
-            }));
+            expect(
+              users.save.calledWith({
+                firstName: 'Barney',
+                lastName: 'Rubble',
+                email: 'barney@rubble.kings.io'
+              })
+            );
             done();
           });
       });
@@ -478,8 +488,7 @@ describe('route: /users', () => {
 
     afterEach(() => {
       password.change.restore();
-    })
-
+    });
 
     it('requires an API login', done => {
       auth.isAuthenticated.returns(false);
@@ -505,7 +514,13 @@ describe('route: /users', () => {
         })
         .end((err, res) => {
           expect(password.change.calledOnce).to.be.true;
-          expect(password.change.calledWith('30', 'IamNewPa$$worD', 'iAmCurr3ntPassw0rd')).to.be.true;
+          expect(
+            password.change.calledWith(
+              '30',
+              'IamNewPa$$worD',
+              'iAmCurr3ntPassw0rd'
+            )
+          ).to.be.true;
           done();
         });
     });

@@ -26,7 +26,7 @@ describe('service: encryption', () => {
   afterEach(() => {
     crypto.randomBytes.restore();
     crypto.createHmac.restore();
-  })
+  });
 
   it('exists', () => {
     expect(service).to.exist;
