@@ -4,7 +4,7 @@ const expect = require('chai').expect;
 const sinon = require('sinon');
 
 const MockClient = require('../mocks/mock-client');
-const pool = require('../../src/config/database');
+const database = require('../../src/config/database');
 
 const encryption = require('../../src/services/encryption');
 const password = require('../../src/services/password');
@@ -15,14 +15,14 @@ describe('service: password', () => {
     sinon.stub(encryption, 'hash');
     sinon.stub(encryption, 'salt');
     client = new MockClient();
-    sinon.stub(pool, 'connect');
-    pool.connect.resolves(client);
+    sinon.stub(database, 'connect');
+    database.connect.resolves(client);
   });
 
   afterEach(() => {
     encryption.hash.restore();
     encryption.salt.restore();
-    pool.connect.restore();
+    database.connect.restore();
   });
 
   it('exists', () => {
@@ -53,9 +53,9 @@ describe('service: password', () => {
       }
     });
 
-    it('connects to the pool', async () => {
+    it('connects to the database', async () => {
       await password.initialize(42, 'shhhhhIam$ecret');
-      expect(pool.connect.calledOnce).to.be.true;
+      expect(database.connect.calledOnce).to.be.true;
     });
 
     it('rejects if a password row exists for the user', async () => {
@@ -144,9 +144,9 @@ describe('service: password', () => {
       }
     });
 
-    it('connects to the pool', async () => {
+    it('connects to the database', async () => {
       await password.change(42, 'shhhhhIam$ecret', 'IamPassw0rd');
-      expect(pool.connect.calledOnce).to.be.true;
+      expect(database.connect.calledOnce).to.be.true;
     });
 
     it('throws an error if the current password is not valid', async () => {
@@ -198,9 +198,9 @@ describe('service: password', () => {
       encryption.hash.withArgs('39949AAC43', 'IamPassw0rd').returns('F00BA4');
     });
 
-    it('connects to the pool', () => {
+    it('connects to the database', () => {
       password.matches(42, 'shhhhhIam$ecret');
-      expect(pool.connect.calledOnce).to.be.true;
+      expect(database.connect.calledOnce).to.be.true;
     });
 
     it('queries the user credentials', async () => {

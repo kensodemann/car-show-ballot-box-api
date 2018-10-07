@@ -1,7 +1,7 @@
 'use strict';
 
 const expect = require('chai').expect;
-const pool = require('../../src/config/database');
+const database = require('../../src/config/database');
 const MockClient = require('../mocks/mock-client');
 const sinon = require('sinon');
 
@@ -14,8 +14,8 @@ describe('service: users', () => {
 
   beforeEach(() => {
     client = new MockClient();
-    sinon.stub(pool, 'connect');
-    pool.connect.resolves(client);
+    sinon.stub(database, 'connect');
+    database.connect.resolves(client);
     testData = [
       {
         id: 1,
@@ -33,13 +33,13 @@ describe('service: users', () => {
   });
 
   afterEach(() => {
-    pool.connect.restore();
+    database.connect.restore();
   });
 
   describe('getAll', () => {
-    it('connects to the pool', () => {
+    it('connects to the database', () => {
       service.getAll();
-      expect(pool.connect.calledOnce).to.be.true;
+      expect(database.connect.calledOnce).to.be.true;
     });
 
     it('queries the users', async () => {
@@ -65,9 +65,9 @@ describe('service: users', () => {
   });
 
   describe('get', () => {
-    it('connects to the pool', () => {
+    it('connects to the database', () => {
       service.get(42);
-      expect(pool.connect.calledOnce).to.be.true;
+      expect(database.connect.calledOnce).to.be.true;
     });
 
     it('queries the users for the user with the given ID', async () => {
@@ -138,12 +138,12 @@ describe('service: users', () => {
   });
 
   describe('save', () => {
-    it('connects to the pool', async () => {
+    it('connects to the database', async () => {
       await service.save({
         firstName: 'Tess',
         lastName: 'McTesterson'
       });
-      expect(pool.connect.calledOnce).to.be.true;
+      expect(database.connect.calledOnce).to.be.true;
     });
 
     describe('a user with an ID', () => {

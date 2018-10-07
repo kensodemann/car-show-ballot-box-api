@@ -41,7 +41,7 @@ describe('service: car-classes', () => {
   });
 
   describe('getAll', () => {
-    it('connects to the pool', () => {
+    it('connects to the database', () => {
       service.getAll();
       expect(database.connect.calledOnce).to.be.true;
     });

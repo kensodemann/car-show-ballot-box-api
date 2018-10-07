@@ -2,7 +2,7 @@
 
 const expect = require('chai').expect;
 const MockClient = require('../mocks/mock-client');
-const pool = require('../../src/config/database');
+const database = require('../../src/config/database');
 const sinon = require('sinon');
 const service = require('../../src/services/car-shows');
 
@@ -12,8 +12,8 @@ describe('service: car-classes', () => {
 
   beforeEach(() => {
     client = new MockClient();
-    sinon.stub(pool, 'connect');
-    pool.connect.resolves(client);
+    sinon.stub(database, 'connect');
+    database.connect.resolves(client);
     sinon.stub(client, 'query');
     client.query.returns({ rows: [] });
     testData = {
@@ -161,13 +161,13 @@ describe('service: car-classes', () => {
   });
 
   afterEach(() => {
-    pool.connect.restore();
+    database.connect.restore();
   });
 
   describe('getAll', () => {
-    it('connects to the pool', () => {
+    it('connects to the database', () => {
       service.getAll();
-      expect(pool.connect.calledOnce).to.be.true;
+      expect(database.connect.calledOnce).to.be.true;
     });
 
     it('queries the car shows and classes', async () => {
@@ -324,9 +324,9 @@ describe('service: car-classes', () => {
   });
 
   describe('get', () => {
-    it('connects to the pool', () => {
+    it('connects to the database', () => {
       service.get(3);
-      expect(pool.connect.calledOnce).to.be.true;
+      expect(database.connect.calledOnce).to.be.true;
     });
 
     it('queries the car shows and classes', async () => {
@@ -417,9 +417,9 @@ describe('service: car-classes', () => {
       clock.restore();
     });
 
-    it('connects to the pool', () => {
+    it('connects to the database', () => {
       service.getCurrent();
-      expect(pool.connect.calledOnce).to.be.true;
+      expect(database.connect.calledOnce).to.be.true;
     });
 
     it('queries the car shows', async () => {
@@ -533,9 +533,9 @@ describe('service: car-classes', () => {
         };
       });
 
-      it('connects to the pool', () => {
+      it('connects to the database', () => {
         service.save(testCarShow);
-        expect(pool.connect.calledOnce).to.be.true;
+        expect(database.connect.calledOnce).to.be.true;
       });
 
       it('updates the show', async () => {
@@ -669,9 +669,9 @@ describe('service: car-classes', () => {
         client.query.onCall(0).resolves({ rows: [{ id: 42 }] });
       });
 
-      it('connects to the pool', () => {
+      it('connects to the database', () => {
         service.save(testCarShow);
-        expect(pool.connect.calledOnce).to.be.true;
+        expect(database.connect.calledOnce).to.be.true;
       });
 
       it('inserts the show', async () => {

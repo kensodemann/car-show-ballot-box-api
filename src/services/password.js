@@ -1,7 +1,7 @@
 'use strict';
 
 const encryption = require('./encryption');
-const pool = require('../config/database');
+const database = require('../config/database');
 
 class Password {
   async initialize(id, password) {
@@ -11,7 +11,7 @@ class Password {
       return reject;
     }
 
-    const client = await pool.connect();
+    const client = await database.connect();
     const data = await this._getCredentials(client, id);
     if (data) {
       return Promise.reject(new Error('Password already initialized'));
@@ -29,7 +29,7 @@ class Password {
       return reject;
     }
 
-    const client = await pool.connect();
+    const client = await database.connect();
     if (!await this._passwordMatches(client, id, currentPassword)) {
       return Promise.reject(new Error('Invalid password'));
     }
@@ -40,7 +40,7 @@ class Password {
   }
 
   async matches(id, password) {
-    const client = await pool.connect();
+    const client = await database.connect();
     const m = this._passwordMatches(client, id, password);
     client.release();
     return m;

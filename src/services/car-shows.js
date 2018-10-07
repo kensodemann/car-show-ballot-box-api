@@ -1,8 +1,8 @@
-const pool = require('../config/database');
+const database = require('../config/database');
 
 class CarShows {
   async getAll() {
-    const client = await pool.connect();
+    const client = await database.connect();
     const qres = await Promise.all([
       client.query('select * from car_shows order by year desc'),
       client.query('select * from car_show_classes')
@@ -12,7 +12,7 @@ class CarShows {
   }
 
   async get(id) {
-    const client = await pool.connect();
+    const client = await database.connect();
     const qres = await Promise.all([
       client.query('select * from car_shows where id = $1', [id]),
       client.query('select * from car_show_classes where car_show_rid = $1', [
@@ -25,7 +25,7 @@ class CarShows {
 
   async getCurrent() {
     let classesRes;
-    const client = await pool.connect();
+    const client = await database.connect();
     const year = new Date().getFullYear();
     const showsRes = await client.query(
       'select * from car_shows where year = $1',
@@ -43,7 +43,7 @@ class CarShows {
 
   async save(show) {
     let id = show.id;
-    const client = await pool.connect();
+    const client = await database.connect();
     if (id) {
       await client.query(
         'update car_shows set name = $1, date = $2, year = $3 where id = $4',
