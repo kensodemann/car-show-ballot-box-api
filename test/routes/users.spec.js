@@ -44,7 +44,7 @@ describe('route: /users', () => {
         roles: ['admin']
       }
     ];
-    sinon.stub(auth, 'isAuthenticated').returns(true);
+    sinon.stub(auth, 'isAuthenticated').resolves(true);
     sinon.stub(auth, 'verifyToken').returns({
       id: 1138,
       firstName: 'Teddy',
@@ -81,7 +81,7 @@ describe('route: /users', () => {
 
   describe('get', () => {
     it('requires an API login', done => {
-      auth.isAuthenticated.returns(false);
+      auth.isAuthenticated.resolves(false);
       request(app)
         .get('/users')
         .end((err, res) => {
@@ -103,7 +103,7 @@ describe('route: /users', () => {
 
     describe('with "current"', () => {
       it('requires an API login', done => {
-        auth.isAuthenticated.returns(false);
+        auth.isAuthenticated.resolves(false);
         request(app)
           .get('/users/current')
           .end((err, res) => {
@@ -131,7 +131,7 @@ describe('route: /users', () => {
 
     describe('with an id', () => {
       it('requires an API login', done => {
-        auth.isAuthenticated.returns(false);
+        auth.isAuthenticated.resolves(false);
         request(app)
           .get('/users/30')
           .end((err, res) => {
@@ -209,7 +209,7 @@ describe('route: /users', () => {
   describe('post', () => {
     describe('with an id', () => {
       it('requires an API login', done => {
-        auth.isAuthenticated.returns(false);
+        auth.isAuthenticated.resolves(false);
         request(app)
           .post('/users/30')
           .send({
@@ -372,7 +372,7 @@ describe('route: /users', () => {
 
     describe('without an id', () => {
       it('requires an API login', done => {
-        auth.isAuthenticated.returns(false);
+        auth.isAuthenticated.resolves(false);
         request(app)
           .post('/users')
           .send({
@@ -491,7 +491,7 @@ describe('route: /users', () => {
     });
 
     it('requires an API login', done => {
-      auth.isAuthenticated.returns(false);
+      auth.isAuthenticated.resolves(false);
       request(app)
         .post('/users/30/password')
         .send({

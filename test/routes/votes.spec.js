@@ -77,7 +77,7 @@ describe('route: /votes', () => {
 
     describe('when not logged in', () => {
       beforeEach(() => {
-        auth.isAuthenticated.returns(false);
+        auth.isAuthenticated.resolves(false);
       });
 
       registerGetTests();
