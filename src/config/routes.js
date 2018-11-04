@@ -10,5 +10,4 @@ module.exports = app => {
   require('../routes/car-classes')(app);
   require('../routes/car-shows')(app);
   require('../routes/users')(app);
-  require('../routes/votes')(app);
 };

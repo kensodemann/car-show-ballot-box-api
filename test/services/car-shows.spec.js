@@ -1,8 +1,10 @@
 'use strict';
 
 const expect = require('chai').expect;
-const MockClient = require('../mocks/mock-client');
+const MockClient = require('../util/mock-client');
 const database = require('../../src/config/database');
+const deepCopy = require('../util/deep-copy');
+const masterData = require('../util/test-data');
 const sinon = require('sinon');
 const service = require('../../src/services/car-shows');
 
@@ -16,148 +18,10 @@ describe('service: car-classes', () => {
     database.connect.resolves(client);
     sinon.stub(client, 'query');
     client.query.returns({ rows: [] });
-    testData = {
-      carShows: [
-        {
-          id: 1,
-          name: 'Waukesha Show 2015',
-          date: '2015-08-12',
-          year: 2015
-        },
-        {
-          id: 2,
-          name: 'Waukesha Show 2016',
-          date: '2016-08-11',
-          year: 2016
-        },
-        {
-          id: 3,
-          name: 'Waukesha Show 2017',
-          date: '2017-08-10',
-          year: 2017
-        },
-        {
-          id: 4,
-          name: 'Waukesha Show 2018',
-          date: '2017-08-14',
-          year: 2017
-        }
-      ],
-      carShowClasses: [
-        {
-          id: 1,
-          name: 'A',
-          description: 'Antique through 1954, Cars & Trucks',
-          active: true,
-          car_show_rid: 1
-        },
-        {
-          id: 5,
-          name: 'A',
-          description: 'Antique through 1954, Cars & Trucks',
-          active: true,
-          car_show_rid: 2
-        },
-        {
-          id: 9,
-          name: 'A',
-          description: 'Antique through 1954, Cars & Trucks',
-          active: true,
-          car_show_rid: 3
-        },
-        {
-          id: 13,
-          name: 'A',
-          description: 'Antique through 1954, Cars & Trucks',
-          active: true,
-          car_show_rid: 4
-        },
-        {
-          id: 2,
-          name: 'B',
-          description: '1955-1962, Cars Only',
-          active: true,
-          car_show_rid: 1
-        },
-        {
-          id: 6,
-          name: 'B',
-          description: '1955-1962, Cars Only',
-          active: true,
-          car_show_rid: 2
-        },
-        {
-          id: 10,
-          name: 'B',
-          description: '1955-1962, Cars Only',
-          active: true,
-          car_show_rid: 3
-        },
-        {
-          id: 14,
-          name: 'B',
-          description: '1955-1962, Cars Only',
-          active: true,
-          car_show_rid: 4
-        },
-        {
-          id: 15,
-          name: 'C',
-          description: '1963-1967, Cars Only',
-          active: true,
-          car_show_rid: 4
-        },
-        {
-          id: 11,
-          name: 'C',
-          description: '1963-1967, Cars Only',
-          active: true,
-          car_show_rid: 3
-        },
-        {
-          id: 7,
-          name: 'C',
-          description: '1963-1967, Cars Only',
-          active: true,
-          car_show_rid: 2
-        },
-        {
-          id: 3,
-          name: 'C',
-          description: '1963-1967, Cars Only',
-          active: true,
-          car_show_rid: 1
-        },
-        {
-          id: 4,
-          name: 'D',
-          description: '1968-1970, Cars Only',
-          active: true,
-          car_show_rid: 1
-        },
-        {
-          id: 8,
-          name: 'D',
-          description: '1968-1970, Cars Only',
-          active: true,
-          car_show_rid: 2
-        },
-        {
-          id: 12,
-          name: 'D',
-          description: '1968-1970, Cars Only',
-          active: true,
-          car_show_rid: 3
-        },
-        {
-          id: 16,
-          name: 'D',
-          description: '1968-1970, Cars Only',
-          active: true,
-          car_show_rid: 4
-        }
-      ]
-    };
+    testData = deepCopy({
+      carShows: masterData.carShows,
+      carShowClasses: masterData.carShowClasses
+    });
   });
 
   afterEach(() => {
@@ -284,8 +148,8 @@ describe('service: car-classes', () => {
         {
           id: 4,
           name: 'Waukesha Show 2018',
-          date: '2017-08-14',
-          year: 2017,
+          date: '2018-08-14',
+          year: 2018,
           classes: [
             {
               id: 13,

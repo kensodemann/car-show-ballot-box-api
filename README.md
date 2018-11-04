@@ -5,7 +5,9 @@ My dad helps run a car show and he counts the ballots. It is a painful process. 
 ## Developing
 
 1. clone the repo
-1. npm i
+1. `npm i`
 1. create a database and use `scripts/install.sql` to create the tables in it
-1. npm test (or npm test -- --watch)
-1. npm start to create a dev server
+1. create a second unit testing database and use `scripts/install.sql` to create the tables in it
+1. set CAR_SHOW_TEST_DB_URL environment variable (example: `export CAR_SHOW_TEST_DB_URL=postgres://ken:ken@localhost/testcarshowballotbox`)
+1. `npm test` (or `npm test -- --watch`)
+1. `heroku local web` to create a dev server

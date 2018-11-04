@@ -70,6 +70,29 @@ function loadCarShowBallots(client) {
       )
     );
   });
+  trans.push(
+    client.query(`select setval('car_show_ballots_id_sequence', $1)`, [
+      testData.carShowBallots.length
+    ])
+  );
+  return Promise.all(trans);
+}
+
+function loadCarShowBallotVotes(client) {
+  const trans = [];
+  testData.carShowBallotVotes.forEach(v => {
+    trans.push(
+      client.query(
+        'insert into car_show_ballot_votes(id,car_show_class_rid, car_show_ballot_rid, car_number) values($1, $2, $3, $4)',
+        [v.id, v.car_show_class_rid, v.car_show_ballot_rid, v.car_number]
+      )
+    );
+  });
+  trans.push(
+    client.query(`select setval('car_show_ballot_votes_id_sequence', $1)`, [
+      testData.carShowBallotVotes.length
+    ])
+  );
   return Promise.all(trans);
 }
 
@@ -81,6 +104,7 @@ module.exports = {
     await loadCarShows(client);
     await loadCarShowClasses(client);
     await loadCarShowBallots(client);
+    await loadCarShowBallotVotes(client);
     client.release();
   }
 };

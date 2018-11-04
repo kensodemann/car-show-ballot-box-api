@@ -3,7 +3,7 @@
 const expect = require('chai').expect;
 const sinon = require('sinon');
 
-const MockClient = require('../mocks/mock-client');
+const MockClient = require('../util/mock-client');
 const database = require('../../src/config/database');
 
 const encryption = require('../../src/services/encryption');

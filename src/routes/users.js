@@ -75,7 +75,6 @@ module.exports = app => {
           );
           res.send({ success: true });
         } catch (err) {
-          console.log('we are in the catch');
           const msg = err.toString();
           if (/Error: Invalid/.test(msg)) {
             res.status(400).send({ reason: msg });

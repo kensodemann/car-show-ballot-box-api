@@ -10,13 +10,19 @@ Any service that interacts with the database will take the database connection p
 
 ## Data Services
 
+### Ballots
+
+The ballots service deals with the ballots cast for a car show. There is no reason at this time to deal with ballots outside of the context of an individual show. A ballot consists of and ID, the car show ID, and a list of votes, one for each valid class.
+
+* `getForShow(carShowId)`
+* `get(id)`
+* `save(ballot)`
+
 ### Car Classes
 
 ### Car Shows
 
 ### Users
-
-### Votes
 
 ## Logic Services
 

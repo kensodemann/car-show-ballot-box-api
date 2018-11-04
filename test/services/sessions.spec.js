@@ -2,7 +2,7 @@
 
 const database = require('../../src/config/database');
 const expect = require('chai').expect;
-const MockClient = require('../mocks/mock-client');
+const MockClient = require('../util/mock-client');
 const sinon = require('sinon');
 const sessions = require('../../src/services/sessions');
 

@@ -1,7 +1,7 @@
 'use strict';
 
 const expect = require('chai').expect;
-const MockClient = require('../mocks/mock-client');
+const MockClient = require('../util/mock-client');
 const database = require('../../src/config/database');
 const sinon = require('sinon');
 const service = require('../../src/services/car-classes');
