@@ -243,7 +243,11 @@ describe.only('service: car-classes', () => {
   });
 
   describe('save', () => {
-    describe.only('existing show', () => {
+    afterEach(async () => {
+      await testDatabase.reload();
+    });
+
+    describe('existing show', () => {
       let testCarShow;
       beforeEach(() => {
         testCarShow = {
@@ -268,7 +272,7 @@ describe.only('service: car-classes', () => {
               id: 7,
               name: 'C',
               description: '1963-1967, Cars Only',
-              active: false
+              active: true
             },
             {
               id: 8,
@@ -283,21 +287,27 @@ describe.only('service: car-classes', () => {
       it('updates the show name', async () => {
         testCarShow.name = 'something different';
         await service.save(testCarShow);
-        const res = await database.query('select name from car_shows where id = 2');
+        const res = await database.query(
+          'select name from car_shows where id = 2'
+        );
         expect(res.rows[0].name).to.equal('something different');
       });
 
       it('updates the show date', async () => {
-        testCarShow.date = '2016-07-04'
+        testCarShow.date = '2016-07-04';
         await service.save(testCarShow);
-        const res = await database.query('select date from car_shows where id = 2');
+        const res = await database.query(
+          'select date from car_shows where id = 2'
+        );
         expect(res.rows[0].date).to.equal('2016-07-04');
       });
 
       it('updates the show year', async () => {
         testCarShow.year = 2019;
         await service.save(testCarShow);
-        const res = await database.query('select year from car_shows where id = 2');
+        const res = await database.query(
+          'select year from car_shows where id = 2'
+        );
         expect(res.rows[0].year).to.equal(2019);
       });
 
@@ -306,68 +316,98 @@ describe.only('service: car-classes', () => {
         testCarShow.classes[1].description = 'Zombies';
         testCarShow.classes[2].active = false;
         await service.save(testCarShow);
-        const res0 = await database.query('select name from car_show_classes where id = 5');
-        const res1 = await database.query('select description from car_show_classes where id = 6');
-        const res2 = await database.query('select active from car_show_classes where id = 7');
+        const res0 = await database.query(
+          'select name from car_show_classes where id = 5'
+        );
+        const res1 = await database.query(
+          'select description from car_show_classes where id = 6'
+        );
+        const res2 = await database.query(
+          'select active from car_show_classes where id = 7'
+        );
         expect(res0.rows[0].name).to.equal('Z');
         expect(res1.rows[0].description).to.equal('Zombies');
         expect(res2.rows[0].active).to.equal(false);
       });
 
-      // it('inserts any classes that were added', async () => {
-      //   await service.save(testCarShow);
-      //   expect(
-      //     client.query.calledWith(
-      //       'insert into car_show_classes (name, description, active, car_show_rid) values ($1, $2, $3, $4)',
-      //       ['B', '1955-1962, Cars Only', true, 2]
-      //     )
-      //   ).to.be.true;
-      // });
+      it('inserts any classes that were added', async () => {
+        testCarShow.classes.push({
+          name: 'X',
+          description: 'The Truth is Out There',
+          active: true
+        });
+        await service.save(testCarShow);
+        const id = testData.carShowClasses.length + 1;
+        const res = await database.query('select * from car_show_classes where id = $1', [id]);
+        expect(res.rows[0]).to.deep.equal({
+          id: id,
+          name: 'X',
+          description: 'The Truth is Out There',
+          active: true,
+          car_show_rid: 2
+        });
+      });
 
-      // it('returns the show as updated', async () => {
-      //   const show = await service.save(testCarShow);
-      //   expect(show).to.deep.equal({
-      //     id: 2,
-      //     name: 'Waukesha Show 2016',
-      //     date: '2016-08-11',
-      //     year: 2016,
-      //     classes: [
-      //       {
-      //         id: 5,
-      //         name: 'A',
-      //         description: 'Antique through 1954, Cars & Trucks',
-      //         active: true
-      //       },
-      //       {
-      //         id: 6,
-      //         name: 'B',
-      //         description: '1955-1962, Cars Only',
-      //         active: true
-      //       },
-      //       {
-      //         id: 7,
-      //         name: 'C',
-      //         description: '1963-1967, Cars Only',
-      //         active: true
-      //       },
-      //       {
-      //         id: 8,
-      //         name: 'D',
-      //         description: '1968-1970, Cars Only',
-      //         active: true
-      //       }
-      //     ]
-      //   });
-      // });
+      it('returns the show as updated', async () => {
+        testCarShow.name = 'I am Renamed';
+        testCarShow.classes[0].name = 'Z';
+        testCarShow.classes[1].description = 'Zombies';
+        testCarShow.classes[2].active = false;
+        testCarShow.classes.push({
+          name: 'X',
+          description: 'The Truth is Out There',
+          active: true
+        });
+        const id = testData.carShowClasses.length + 1;
+        const show = await service.save(testCarShow);
+        expect(show).to.deep.equal({
+          id: 2,
+          name: 'I am Renamed',
+          date: '2016-08-11',
+          year: 2016,
+          classes: [
+            {
+              id: 5,
+              name: 'Z',
+              description: 'Antique through 1954, Cars & Trucks',
+              active: true
+            },
+            {
+              id: 6,
+              name: 'B',
+              description: 'Zombies',
+              active: true
+            },
+            {
+              id: 7,
+              name: 'C',
+              description: '1963-1967, Cars Only',
+              active: false
+            },
+            {
+              id: 8,
+              name: 'D',
+              description: '1968-1970, Cars Only',
+              active: true
+            },
+            {
+              id: id,
+              name: 'X',
+              description: 'The Truth is Out There',
+              active: true
+            }
+          ]
+        });
+      });
     });
 
     describe('new show', () => {
       let testCarShow;
       beforeEach(() => {
         testCarShow = {
-          name: 'Waukesha Show 2016',
-          date: '2016-08-11',
-          year: 2016,
+          name: 'Waukesha Show 2019',
+          date: '2019-08-14',
+          year: 2019,
           classes: [
             {
               name: 'A',
@@ -386,8 +426,6 @@ describe.only('service: car-classes', () => {
             }
           ]
         };
-
-        client.query.onCall(0).resolves({ rows: [{ id: 42 }] });
       });
 
       it('connects to the database', () => {
