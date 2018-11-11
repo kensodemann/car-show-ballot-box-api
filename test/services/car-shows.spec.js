@@ -7,7 +7,7 @@ const service = require('../../src/services/car-shows');
 const testData = require('../util/test-data');
 const testDatabase = require('../util/test-database');
 
-describe.only('service: car-classes', () => {
+describe('service: car-classes', () => {
   before(async () => {
     await testDatabase.reload();
   });
@@ -338,7 +338,10 @@ describe.only('service: car-classes', () => {
         });
         await service.save(testCarShow);
         const id = testData.carShowClasses.length + 1;
-        const res = await database.query('select * from car_show_classes where id = $1', [id]);
+        const res = await database.query(
+          'select * from car_show_classes where id = $1',
+          [id]
+        );
         expect(res.rows[0]).to.deep.equal({
           id: id,
           name: 'X',
@@ -403,6 +406,8 @@ describe.only('service: car-classes', () => {
 
     describe('new show', () => {
       let testCarShow;
+      let carShowId;
+      let firstClassId;
       beforeEach(() => {
         testCarShow = {
           name: 'Waukesha Show 2019',
@@ -426,102 +431,61 @@ describe.only('service: car-classes', () => {
             }
           ]
         };
-      });
-
-      it('connects to the database', () => {
-        service.save(testCarShow);
-        expect(database.connect.calledOnce).to.be.true;
+        carShowId = testData.carShows.length + 1;
+        firstClassId = testData.carShowClasses.length + 1;
       });
 
       it('inserts the show', async () => {
         await service.save(testCarShow);
-        expect(
-          client.query.calledWith(
-            'insert into car_shows (name, date, year) values ($1, $2, $3) returning id',
-            ['Waukesha Show 2016', '2016-08-11', 2016]
-          )
-        ).to.be.true;
+        const res = await database.query(
+          'select * from car_shows where id = $1',
+          [carShowId]
+        );
+        expect(res.rows[0]).to.deep.equal({
+          id: carShowId,
+          name: 'Waukesha Show 2019',
+          date: '2019-08-14',
+          year: 2019
+        });
       });
 
       it('insert the classes for the show', async () => {
         await service.save(testCarShow);
-        expect(
-          client.query.calledWith(
-            'insert into car_show_classes (name, description, active, car_show_rid) values ($1, $2, $3, $4)',
-            ['A', 'Antique through 1954, Cars & Trucks', true, 42]
-          )
-        ).to.be.true;
-        expect(
-          client.query.calledWith(
-            'insert into car_show_classes (name, description, active, car_show_rid) values ($1, $2, $3, $4)',
-            ['B', '1955-1962, Cars Only', false, 42]
-          )
-        ).to.be.true;
-        expect(
-          client.query.calledWith(
-            'insert into car_show_classes (name, description, active, car_show_rid) values ($1, $2, $3, $4)',
-            ['D', '1968-1970, Cars Only', true, 42]
-          )
-        ).to.be.true;
+        const res = await database.query(
+          'select * from car_show_classes where car_show_rid = $1 order by id',
+          [carShowId]
+        );
+        expect(res.rows.length).to.equal(3);
       });
 
-      it('queries the show and classes for the dhow', async () => {
-        await service.save(testCarShow);
-        expect(
-          client.query.calledWith('select * from car_shows where id = $1', [42])
-        ).to.be.true;
-        expect(
-          client.query.calledWith(
-            'select * from car_show_classes where car_show_rid = $1',
-            [42]
-          )
-        ).to.be.true;
-      });
-
-      it('returns the show as queried', async () => {
-        client.query.onCall(4).resolves({ rows: [testData.carShows[1]] });
-        client.query.onCall(5).resolves({
-          rows: testData.carShowClasses.filter(cls => cls.car_show_rid === 2)
-        });
+      it('returns the show as inserted', async () => {
         const show = await service.save(testCarShow);
         expect(show).to.deep.equal({
-          id: 2,
-          name: 'Waukesha Show 2016',
-          date: '2016-08-11',
-          year: 2016,
+          id: carShowId,
+          name: 'Waukesha Show 2019',
+          date: '2019-08-14',
+          year: 2019,
           classes: [
             {
-              id: 5,
+              id: firstClassId,
               name: 'A',
               description: 'Antique through 1954, Cars & Trucks',
               active: true
             },
             {
-              id: 6,
+              id: firstClassId + 1,
               name: 'B',
               description: '1955-1962, Cars Only',
-              active: true
+              active: false
             },
             {
-              id: 7,
-              name: 'C',
-              description: '1963-1967, Cars Only',
-              active: true
-            },
-            {
-              id: 8,
+              id: firstClassId + 2,
               name: 'D',
               description: '1968-1970, Cars Only',
               active: true
             }
           ]
         });
-      });
-
-      it('releases the client', async () => {
-        sinon.spy(client, 'release');
-        await service.save(testCarShow);
-        expect(client.release.calledOnce).to.be.true;
       });
     });
   });
