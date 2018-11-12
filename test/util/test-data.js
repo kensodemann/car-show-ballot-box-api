@@ -1200,5 +1200,19 @@ module.exports = {
       car_show_class_rid: 12,
       car_number: 320
     }
+  ],
+  users: [
+    {
+      id: 1,
+      first_name: 'Kenneth',
+      last_name: 'Sodemann',
+      email: 'not.my.real.email@gmail.com'
+    },
+    {
+      id: 2,
+      first_name: 'Lisa',
+      last_name: 'Buerger',
+      email: 'another.fake.email@aol.com'
+    }
   ]
 };
