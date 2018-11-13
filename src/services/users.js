@@ -22,11 +22,9 @@ class Users {
         )
       : client.query(`select ${columns} from users where id = $1`, [id]));
     client.release();
-    const user = data.rows && data.rows[0] ? { ...data.rows[0] } : undefined;
-    if (user) {
-      user.roles = ['admin', 'user'];
-    }
-    return user;
+    return (
+      data.rows && data.rows[0] && { ...data.rows[0], roles: ['admin', 'user'] }
+    );
   }
 
   async save(user) {
