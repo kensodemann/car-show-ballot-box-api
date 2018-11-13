@@ -109,7 +109,7 @@ function loadUsers() {
   });
   trans.push(
     database.query(`select setval('user_id_sequence', $1)`, [
-      testData.carShowBallotVotes.length
+      testData.users.length
     ])
   );
   return Promise.all(trans);

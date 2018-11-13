@@ -2,7 +2,6 @@
 
 const expect = require('chai').expect;
 const database = require('../../src/config/database');
-const MockClient = require('../util/mock-client');
 const sinon = require('sinon');
 const testDatabase = require('../util/test-database');
 
@@ -91,78 +90,63 @@ describe('service: users', () => {
     });
   });
 
-  describe.skip('save', () => {
-    it('connects to the database', async () => {
-      await service.save({
-        firstName: 'Tess',
-        lastName: 'McTesterson'
-      });
-      expect(database.connect.calledOnce).to.be.true;
+  describe('save', () => {
+    beforeEach(() => {
+      sinon.stub(password, 'change');
+      sinon.stub(password, 'initialize');
+    });
+
+    afterEach(async () => {
+      password.change.restore();
+      password.initialize.restore();
+      await testDatabase.reload();
     });
 
     describe('a user with an ID', () => {
       it('updates the existing user', async () => {
-        sinon.spy(client, 'query');
         await service.save({
-          id: 4273,
+          id: 42,
           firstName: 'Tess',
           lastName: 'McTesterson',
           email: 'tess@test.ly'
         });
-        expect(client.query.calledOnce).to.be.true;
-        const sql = client.query.args[0][0];
-        expect(
-          /^update users.*where id = \$1 returning id, first_name as "firstName",/.test(
-            sql
-          )
-        ).to.be.true;
+        const res = await database.query('select * from users where id = 42');
+        expect(res.rows[0]).to.deep.equal({
+          id: 42,
+          first_name: 'Tess',
+          last_name: 'McTesterson',
+          email: 'tess@test.ly'
+        });
       });
 
       it('does not touch the password', async () => {
-        sinon.spy(password, 'change');
-        sinon.spy(password, 'initialize');
         await service.save({
-          id: 4273,
+          id: 42,
           firstName: 'Tess',
           lastName: 'McTesterson',
           email: 'tess@test.ly'
         });
         expect(password.change.called).to.be.false;
-        password.change.restore();
-        password.initialize.restore();
+        expect(password.initialize.called).to.be.false;
       });
 
       it('resolves the updated user', async () => {
-        sinon.stub(client, 'query');
-        client.query.returns(
-          Promise.resolve({
-            rows: [
-              {
-                id: 4273,
-                firstName: 'Tess',
-                lastName: 'McTesterson',
-                email: 'tess@test.ly'
-              }
-            ]
-          })
-        );
         const user = await service.save({
-          id: 4273,
+          id: 42,
           firstName: 'Tess',
           lastName: 'McTesterson',
           email: 'tess@test.ly'
         });
         expect(user).to.deep.equal({
-          id: 4273,
+          id: 42,
           firstName: 'Tess',
           lastName: 'McTesterson',
-          email: 'tess@test.ly'
+          email: 'tess@test.ly',
+          roles: ['admin', 'user']
         });
       });
 
       it('resolves empty if there was no user to update', async () => {
-        sinon.stub(client, 'query');
-        client.query.resolves({ rows: [] });
         const user = await service.save({
           id: 4273,
           firstName: 'Tess',
@@ -174,44 +158,23 @@ describe('service: users', () => {
     });
 
     describe('a user without an ID', () => {
-      beforeEach(() => {
-        sinon.stub(password, 'initialize');
-      });
-
-      afterEach(() => {
-        password.initialize.restore();
-      });
-
       it('creates a new user', async () => {
-        sinon.spy(client, 'query');
         await service.save({
           firstName: 'Tess',
           lastName: 'McTesterson',
           email: 'tess@test.ly'
         });
-        expect(client.query.calledOnce).to.be.true;
-        const sql = client.query.args[0][0];
-        expect(
-          /^insert into users.*returning id, first_name as "firstName",/.test(
-            sql
-          )
-        ).to.be.true;
+        const res = await database.query('select * from users');
+        expect(res.rows.length).to.equal(5);
+        expect(res.rows.find(u => u.id === 5)).to.deep.equal({
+          id: 5,
+          first_name: 'Tess',
+          last_name: 'McTesterson',
+          email: 'tess@test.ly'
+        });
       });
 
       it('creates an initial password', async () => {
-        sinon.stub(client, 'query');
-        client.query.returns(
-          Promise.resolve({
-            rows: [
-              {
-                id: 1138,
-                firstName: 'Tess',
-                lastName: 'McTesterson',
-                email: 'tess@test.ly'
-              }
-            ]
-          })
-        );
         await service.save({
           firstName: 'Tess',
           lastName: 'McTesterson',
@@ -219,66 +182,32 @@ describe('service: users', () => {
           password: 'I am a freak'
         });
         expect(password.initialize.calledOnce).to.be.true;
-        expect(password.initialize.calledWith(1138, 'I am a freak')).to.be.true;
+        expect(password.initialize.calledWith(5, 'I am a freak')).to.be.true;
       });
 
       it('defaults to password if no password is given', async () => {
-        sinon.stub(client, 'query');
-        client.query.returns(
-          Promise.resolve({
-            rows: [
-              {
-                id: 1138,
-                firstName: 'Tess',
-                lastName: 'McTesterson',
-                email: 'tess@test.ly'
-              }
-            ]
-          })
-        );
         await service.save({
           firstName: 'Tess',
           lastName: 'McTesterson',
           email: 'tess@test.ly'
         });
-        expect(password.initialize.calledWith(1138, 'password')).to.be.true;
+        expect(password.initialize.calledWith(5, 'password')).to.be.true;
       });
 
       it('resolves the inserted user', async () => {
-        sinon.stub(client, 'query');
-        client.query.returns(
-          Promise.resolve({
-            rows: [
-              {
-                id: 4273,
-                firstName: 'Tess',
-                lastName: 'McTesterson',
-                email: 'tess@test.ly'
-              }
-            ]
-          })
-        );
         const user = await service.save({
           firstName: 'Tess',
           lastName: 'McTesterson',
           email: 'tess@test.ly'
         });
         expect(user).to.deep.equal({
-          id: 4273,
+          id: 5,
           firstName: 'Tess',
           lastName: 'McTesterson',
-          email: 'tess@test.ly'
+          email: 'tess@test.ly',
+          roles: ['admin', 'user']
         });
       });
-    });
-
-    it('releases the client', async () => {
-      sinon.spy(client, 'release');
-      await service.save({
-        firstName: 'Tess',
-        lastName: 'McTesterson'
-      });
-      expect(client.release.calledOnce).to.be.true;
     });
   });
 });
