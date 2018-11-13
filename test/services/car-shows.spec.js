@@ -7,7 +7,7 @@ const service = require('../../src/services/car-shows');
 const testData = require('../util/test-data');
 const testDatabase = require('../util/test-database');
 
-describe('service: car-classes', () => {
+describe('service: car-shows', () => {
   before(async () => {
     await testDatabase.reload();
   });
@@ -370,12 +370,6 @@ describe('service: car-classes', () => {
           year: 2016,
           classes: [
             {
-              id: 5,
-              name: 'Z',
-              description: 'Antique through 1954, Cars & Trucks',
-              active: true
-            },
-            {
               id: 6,
               name: 'B',
               description: 'Zombies',
@@ -397,6 +391,12 @@ describe('service: car-classes', () => {
               id: id,
               name: 'X',
               description: 'The Truth is Out There',
+              active: true
+            },
+            {
+              id: 5,
+              name: 'Z',
+              description: 'Antique through 1954, Cars & Trucks',
               active: true
             }
           ]

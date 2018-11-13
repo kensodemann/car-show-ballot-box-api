@@ -8,7 +8,7 @@ const columns = 'id, first_name as "firstName", last_name as "lastName", email';
 class Users {
   async getAll() {
     const client = await database.connect();
-    const data = await client.query(`select ${columns} from users`);
+    const data = await client.query(`select ${columns} from users order by id`);
     client.release();
     return data.rows;
   }

@@ -1209,6 +1209,18 @@ module.exports = {
       email: 'not.my.real.email@gmail.com'
     },
     {
+      id: 42,
+      first_name: 'Douglas',
+      last_name: 'Adams',
+      email: 'douglas@adams.net'
+    },
+    {
+      id: 1138,
+      first_name: 'George',
+      last_name: 'Lucas',
+      email: 'luke@sykwalker.com'
+    },
+    {
       id: 2,
       first_name: 'Lisa',
       last_name: 'Buerger',

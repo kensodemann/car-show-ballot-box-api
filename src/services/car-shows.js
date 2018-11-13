@@ -5,7 +5,7 @@ class CarShows {
     const client = await database.connect();
     const qres = await Promise.all([
       client.query('select * from car_shows order by year desc'),
-      client.query('select * from car_show_classes')
+      client.query('select * from car_show_classes order by name')
     ]);
     client.release();
     return merge(qres[0].rows, qres[1].rows);
@@ -15,7 +15,7 @@ class CarShows {
     const client = await database.connect();
     const qres = await Promise.all([
       client.query('select * from car_shows where id = $1', [id]),
-      client.query('select * from car_show_classes where car_show_rid = $1', [
+      client.query('select * from car_show_classes where car_show_rid = $1 order by name', [
         id
       ])
     ]);
@@ -33,7 +33,7 @@ class CarShows {
     );
     if (showsRes.rows && showsRes.rows.length) {
       classesRes = await client.query(
-        'select * from car_show_classes where car_show_rid = $1',
+        'select * from car_show_classes where car_show_rid = $1 order by name',
         [showsRes.rows[0].id]
       );
     }
@@ -59,7 +59,7 @@ class CarShows {
     await saveCarShowClasses(client, show.classes, id);
     const qres = await Promise.all([
       client.query('select * from car_shows where id = $1', [id]),
-      client.query('select * from car_show_classes where car_show_rid = $1', [
+      client.query('select * from car_show_classes where car_show_rid = $1 order by name', [
         id
       ])
     ]);

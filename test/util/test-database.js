@@ -9,6 +9,7 @@ async function removeOldData() {
   await database.query('delete from car_show_classes');
   await database.query('delete from car_shows');
   await database.query('delete from car_classes');
+  await database.query('delete from users');
 }
 
 function loadClasses() {
@@ -122,5 +123,6 @@ module.exports = {
     await loadCarShowClasses();
     await loadCarShowBallots();
     await loadCarShowBallotVotes();
+    await loadUsers();
   }
 };
